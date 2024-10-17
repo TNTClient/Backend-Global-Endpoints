@@ -70,3 +70,7 @@ dependencyManagement {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+springBoot {
+    mainClass = 'com.jeka8833.tntclientendpoints.RunAllServices'
+}
