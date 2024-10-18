@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class Discord4jConfig {
+class Discord4jConfig {
     private final String botToken;
 
-    Discord4jConfig(@Value("${bot.token}") String botToken) {
+    Discord4jConfig(@Value("${discord.bot.token}") String botToken) {
         this.botToken = botToken;
     }
 
@@ -21,7 +21,7 @@ public class Discord4jConfig {
     public GatewayDiscordClient gatewayDiscordClient() {
         return DiscordClientBuilder.create(botToken).build()
                 .gateway()
-                .setInitialPresence(ignore -> ClientPresence.online(ClientActivity.listening("to /commands")))
+                .setInitialPresence(ignore -> ClientPresence.online(ClientActivity.playing("TNTClient")))
                 .login()
                 .block();
     }

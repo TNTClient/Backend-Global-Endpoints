@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot;
+package com.jeka8833.tntclientendpoints.services.discordbot.configs;
 
 import discord4j.common.JacksonResources;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -23,15 +23,10 @@ public class GlobalCommandRegistrar implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // Create an ObjectMapper that supported Discord4J classes
         JacksonResources d4jMapper = JacksonResources.create();
 
-        // Convenience variables for the sake of easier to read code below.
         PathMatchingResourcePatternResolver matcher = new PathMatchingResourcePatternResolver();
-        ApplicationService applicationService = client.getApplicationService();
-        long applicationId = client.getApplicationId().block();
 
-        // Get our commands json from resources as command data
         List<ApplicationCommandRequest> commands = new ArrayList<>();
         for (Resource resource : matcher.getResources("commands/*.json")) {
             ApplicationCommandRequest request = d4jMapper.getObjectMapper()
@@ -40,8 +35,10 @@ public class GlobalCommandRegistrar implements ApplicationRunner {
             commands.add(request);
         }
 
-        // Bulk overwrite commands. This is now idempotent, so it is safe to use this even when only 1 command
-        // is changed/added/removed
+        //noinspection DataFlowIssue
+        long applicationId = client.getApplicationId().block();
+
+        ApplicationService applicationService = client.getApplicationService();
         applicationService.bulkOverwriteGlobalApplicationCommand(applicationId, commands)
                 .doOnNext(ignore -> log.debug("Successfully registered Global Commands"))
                 .doOnError(e -> log.error("Failed to register global commands", e))

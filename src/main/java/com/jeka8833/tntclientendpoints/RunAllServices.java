@@ -1,11 +1,11 @@
 package com.jeka8833.tntclientendpoints;
 
+import com.jeka8833.tntclientendpoints.services.discordbot.RunDiscordBot;
+import com.jeka8833.tntclientendpoints.services.restapi.RunRestApi;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
 public class RunAllServices {
     public static void main(String[] args) {
-        SpringApplication.run(RunAllServices.class, args);
+        SpringApplication.run(new Class[]{RunRestApi.class, RunDiscordBot.class}, args);
     }
 }

@@ -1,7 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -19,10 +18,8 @@ import java.util.Iterator;
 
 @Service
 public class CapeFilterService {
-    public byte[] loadTNTClientResource(@Nullable String data, int limitFileSizeInBytes) throws IOException {
-        if (data == null) {
-            throw new IllegalArgumentException("Data stream is null");
-        } else if (data.startsWith("http")) {
+    public byte[] loadTNTClientResource(String data, int limitFileSizeInBytes) throws IOException {
+        if (data.startsWith("http")) {
             try (InputStream connectionStream = URI.create(data).toURL().openStream()) {
                 byte[] imageByteArray = connectionStream.readNBytes(limitFileSizeInBytes + 1);
                 if (imageByteArray.length > limitFileSizeInBytes) {

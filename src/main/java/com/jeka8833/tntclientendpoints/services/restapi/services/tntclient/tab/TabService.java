@@ -23,10 +23,6 @@ public class TabService {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid animation text");
         }
 
-        if (tabFilterService.isValidDelay(tabDto.delayMs())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid animation delay");
-        }
-
         String[] animation = tabFilterService.normalizeAnimation(tabDto.tabAnimation());
 
         Path configPath = gitService.getGitFolder().resolve("player/config/" + player + ".json");

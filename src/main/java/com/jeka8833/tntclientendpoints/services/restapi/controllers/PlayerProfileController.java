@@ -6,6 +6,7 @@ import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.T
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.ProfileService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape.CapeService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,7 +25,7 @@ final class PlayerProfileController {
     private final ProfileService profileService;
 
     @PutMapping("api/v1/player/profile/cape")
-    private void updateCape(@RequestBody PostCapeDto capeDto, Authentication authentication) {
+    private void updateCape(@RequestBody @Valid PostCapeDto capeDto, Authentication authentication) {
         UUID player = userService.getUserOrThrow(authentication);
 
         capeService.updateCape(player, capeDto);
@@ -38,7 +39,7 @@ final class PlayerProfileController {
     }
 
     @PutMapping("api/v1/player/profile/tab")
-    private void updateTab(@RequestBody PostTabDto tabDto, Authentication authentication) {
+    private void updateTab(@RequestBody @Valid PostTabDto tabDto, Authentication authentication) {
         UUID player = userService.getUserOrThrow(authentication);
 
         tabService.updateTab(player, tabDto);

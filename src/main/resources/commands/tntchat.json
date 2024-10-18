@@ -1,0 +1,63 @@
+{
+  "name": "tntchat",
+  "description": "Choose a setting to change.",
+  "options": [
+    {
+      "name": "connect",
+      "description": "Connect this channel to TNTClient chat",
+      "type": 1
+    },
+    {
+      "name": "disconnect",
+      "description": "Disconnect this channel to TNTClient chat",
+      "type": 1,
+      "options": [
+        {
+          "name": "channel",
+          "description": "The channel to disconnect from TNTClient chat. <Long>",
+          "type": 3,
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "send",
+      "description": "Allows you to send a message to all players or to one selected player.",
+      "type": 1,
+      "options": [
+        {
+          "name": "message",
+          "description": "The message you want to send.",
+          "type": 3,
+          "required": true
+        },
+        {
+          "name": "receiver",
+          "description": "The recipient of the message, if the field is not specified, the message is public.",
+          "type": 3,
+          "required": false
+        },
+        {
+          "name": "server",
+          "description": "Specifies the server on which the message will be visible.",
+          "type": 3,
+          "required": false,
+          "choices": [
+            {
+              "name": "Global",
+              "value": "Unknown"
+            },
+            {
+              "name": "Hypixel",
+              "value": "Hypixel"
+            },
+            {
+              "name": "TNT Server",
+              "value": "Odyssey"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

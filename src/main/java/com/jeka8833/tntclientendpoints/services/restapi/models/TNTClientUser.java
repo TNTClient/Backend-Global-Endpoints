@@ -1,24 +1,24 @@
 package com.jeka8833.tntclientendpoints.services.restapi.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
+@Entity
 @Table(name = "TCA_UserPrivileges")
 public class TNTClientUser {
     @Id
-    @Column("user")
-    private final UUID id;
+    @Column(name = "id")
+    private UUID id;
 
-    @Column("roles")
-    private final String roles;
+    @Column(name = "roles")
+    private String roles;
 
-    @Column("staticKey")
-    private final UUID staticKey;
+    @Column(name = "staticKey")
+    private UUID staticKey;
 }

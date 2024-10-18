@@ -27,10 +27,6 @@ public class TabFilterService {
         return hasChar;
     }
 
-    public boolean isValidDelay(int delayMs) {
-        return delayMs >= 100;
-    }
-
     public String[] normalizeAnimation(String[] animation) {
         if (animation == null) return null;
 

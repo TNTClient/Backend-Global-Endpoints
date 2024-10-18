@@ -1,6 +1,8 @@
 package com.jeka8833.tntclientendpoints.services.restapi.dtos;
 
-import org.jetbrains.annotations.Nullable;
+import jakarta.validation.constraints.NotBlank;
 
-public record PostCapeDto(boolean enabled, @Nullable String data) {
+import java.util.Optional;
+
+public record PostCapeDto(boolean enabled, Optional<@NotBlank String> data) {
 }

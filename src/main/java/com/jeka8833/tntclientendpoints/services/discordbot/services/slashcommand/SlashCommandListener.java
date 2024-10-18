@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.commands;
+package com.jeka8833.tntclientendpoints.services.discordbot.services.slashcommand;
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import reactor.core.publisher.Mono;
@@ -8,8 +8,8 @@ import reactor.core.publisher.Mono;
  * a getName() method to provide the case-sensitive name of the command.
  * and a handle() method which will house all the logic for processing each command.
  */
-public interface SlashCommand {
+public interface SlashCommandListener {
     String getName();
 
-    Mono<Void> handle(ChatInputInteractionEvent event);
+    Mono<?> handle(ChatInputInteractionEvent event);
 }

@@ -1,19 +1,19 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.models;
 
-import lombok.Builder;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Column;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Getter
-@Builder
+@Entity
 @Table(name = "tnd_discord_users")
 public class DiscordUser {
     @Id
-    @Column("discordID")
-    private final long discordID;
+    @Column(name = "discordID")
+    private long discordID;
 
-    @Column("roles")
-    private final String roles;
+    @Column(name = "roles")
+    private String roles;
 }
