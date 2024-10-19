@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "tnd_live_chat_list")
 public class ConnectedChat {

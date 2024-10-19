@@ -8,10 +8,10 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "tnd_discord_users")
+@Table(name = "discord_user")
 public class DiscordUser {
     @Id
-    @Column(name = "discordID")
+    @Column(name = "user")
     private long discordID;
 
     @Column(name = "roles")

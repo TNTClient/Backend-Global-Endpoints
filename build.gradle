@@ -46,10 +46,12 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.14'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
 
-    // https://mvnrepository.com/artifact/com.discord4j/discord4j-core
-    implementation group: 'com.discord4j', name: 'discord4j-core', version: '3.3.0-RC1'
+    // https://mvnrepository.com/artifact/net.dv8tion/JDA
+    implementation (group: 'net.dv8tion', name: 'JDA', version: '5.1.2') {
+        exclude module: 'opus-java'
+    }
 
     // https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit
     implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '7.0.0.202409031743-r'

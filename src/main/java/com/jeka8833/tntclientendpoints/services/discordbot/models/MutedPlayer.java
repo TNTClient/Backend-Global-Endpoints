@@ -11,7 +11,6 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "tnd_muted_users")
 public class MutedPlayer {

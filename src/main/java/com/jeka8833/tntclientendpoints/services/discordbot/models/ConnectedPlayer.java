@@ -10,7 +10,6 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "tnd_players")
 public class ConnectedPlayer {
