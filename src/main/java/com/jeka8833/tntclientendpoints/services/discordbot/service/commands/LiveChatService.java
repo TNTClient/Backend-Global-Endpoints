@@ -1,6 +1,6 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.service;
+package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChat;
+import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,19 +18,19 @@ public class LiveChatService {
     private final JDA jda;
 
     public void sendGlobalMessage(MessageEmbed message) {
-        for (ConnectedChat connectedChat : connectedChatRepository.findAll()) {
+        for (ConnectedChatModel connectedChatModel : connectedChatRepository.findAll()) {
             try {
-                TextChannel channel = jda.getTextChannelById(connectedChat.getChatID());
+                TextChannel channel = jda.getTextChannelById(connectedChatModel.getChatID());
                 if (channel == null) {
-                    connectedChatRepository.deleteById(connectedChat.getChatID());
+                    connectedChatRepository.deleteById(connectedChatModel.getChatID());
 
-                    log.warn("Delete global chat for: {}", connectedChat.getChatID());
+                    log.warn("Delete global chat for: {}", connectedChatModel.getChatID());
                     continue;
                 }
 
                 channel.sendMessageEmbeds(message).queue();
             } catch (Exception e) {
-                log.warn("Failed to send global message to: {}", connectedChat.getChatID(), e);
+                log.warn("Failed to send global message to: {}", connectedChatModel.getChatID(), e);
             }
         }
     }

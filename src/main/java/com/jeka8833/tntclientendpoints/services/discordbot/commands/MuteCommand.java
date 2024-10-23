@@ -2,21 +2,37 @@ package com.jeka8833.tntclientendpoints.services.discordbot.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommand;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.PrivilegeChecker;
+import com.jeka8833.tntclientendpoints.services.discordbot.models.MutedPlayerModel;
+import com.jeka8833.tntclientendpoints.services.discordbot.repositories.MutedPlayerRepository;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.LiveChatService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
 import lombok.RequiredArgsConstructor;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.boot.convert.DurationStyle;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.awt.*;
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -31,64 +47,140 @@ public class MuteCommand implements SlashCommand {
     );
 
     private final PrivilegeChecker privilegeChecker;
+    private final MojangAPI mojangAPI;
+    private final PlayerRequesterService playerRequesterService;
+    private final MutedPlayerRepository mutedPlayerRepository;
+    private final LiveChatService liveChatService;
 
     @Override
     public CommandData getCommandData() {
         return Commands.slash("mute", "Controls the Mute list.").addSubcommands(
 
                 new SubcommandData("add", "Add a player to the Mute list for TNTClient Chat.")
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "player",
+                                        "The player name or uuid to mute", true)
+                                        .setMinLength(1)
+                                        .setMaxLength(36),
 
-                        .addOption(OptionType.STRING, "player",
-                                "The player name or uuid to mute", true)
+                                new OptionData(OptionType.STRING, "description",
+                                        "The reason for the mute", true)
+                                        .setMinLength(1)
+                                        .setMaxLength(512),
 
-                        .addOption(OptionType.STRING, "description",
-                                "The reason for the mute", true)
-
-                        .addOption(OptionType.STRING, "time", "The time for the mute, format: " +
-                                "\"1d 2h 3m 4s\" it`s 1 day 2 hours 3 minutes 4 seconds", true),
+                                new OptionData(OptionType.STRING, "time",
+                                        "The time for the mute, format: \"1d 2h 3m 4s\" it`s 1 day 2 hours " +
+                                                "3 minutes 4 seconds", true)
+                                        .setMinLength(2)
+                                        .setMaxLength(32)
+                        ),
 
                 new SubcommandData("remove", "Remove a player to the Mute list for TNTClient Chat.")
 
-                        .addOption(OptionType.STRING, "player",
-                                "The player name or uuid to mute", true),
+                        .addOptions(new OptionData(OptionType.STRING, "player",
+                                "The player name or uuid to mute", true)
+                                .setMinLength(1)
+                                .setMaxLength(36)),
 
-                new SubcommandData("list", "Mute list for TNTClient Chat."));
+                new SubcommandData("list", "Mute list for TNTClient Chat.")
+
+                        .addOptions(new OptionData(OptionType.INTEGER, "page",
+                                "Page number", false)
+                                .setMinValue(1))
+        );
     }
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event,
-                                          @NotNull DeferReplyWrapper deferReplay) {
-        if (privilegeChecker.hasNoAccess(event, deferReplay, "MUTE")) return;
+                                          @NotNull DeferReplyWrapper deferReplyWrapper) {
+        if (privilegeChecker.hasNoAccess(event, deferReplyWrapper, "MUTE")) return;
 
         switch (event.getSubcommandName()) {
-            case "add" -> add(event, deferReplay);
-            case "remove" -> remove(event, deferReplay);
-            case "list" -> list(event, deferReplay);
+            case "add" -> add(event, deferReplyWrapper);
+            case "remove" -> remove(event, deferReplyWrapper);
+            case "list" -> list(event, deferReplyWrapper);
 
-            case null, default -> deferReplay.replyError("Invalid command usage");
+            case null, default -> deferReplyWrapper.replyError("Invalid command usage");
         }
     }
 
-    private static void add(@NotNull SlashCommandInteractionEvent event,
-                            @NotNull DeferReplyWrapper deferReplay) {
-        String player = event.getOption("player").getAsString();
-        String description = event.getOption("description").getAsString();
-        String time = event.getOption("time").getAsString();
+    private void add(@NotNull SlashCommandInteractionEvent event,
+                     @NotNull DeferReplyWrapper deferReplyWrapper) {
+        Optional<UUID> playerOpt =
+                playerRequesterService.getProfileUuidOrReplay("player", event, deferReplyWrapper);
+        if (playerOpt.isEmpty()) return;
 
-        deferReplay.replyGood(DurationStyle.SIMPLE.parse(time).toString());
+        String descriptionString = event.getOption("description", "", OptionMapping::getAsString);
+        String timeString = event.getOption("time", "", OptionMapping::getAsString);
+
+        Duration duration = parseTime(timeString);
+        if (duration == null) {
+            deferReplyWrapper.replyError("Invalid time format.");
+
+            return;
+        }
+
+        mutedPlayerRepository.save(MutedPlayerModel.builder()
+                .player(playerOpt.get())
+                .moderator(event.getUser().getIdLong())
+                .reason(descriptionString)
+                .unmuteTime(ZonedDateTime.now().plus(duration))
+                .build()
+        );
+
+        deferReplyWrapper.replyGood("Player muted");
+
+        liveChatService.sendGlobalMessage(
+                new EmbedBuilder()
+                        .setAuthor(
+                                event.getUser().getName() + "(" + event.getUser().getId() + ")",
+                                null,
+                                event.getUser().getAvatarUrl()
+                        )
+                        .setTitle("Muted player: " + playerOpt.get())
+                        .build()
+        );
     }
 
-    private static void remove(@NotNull SlashCommandInteractionEvent event,
-                               @NotNull DeferReplyWrapper deferReplay) {
-        String player = event.getOption("player").getAsString();
+    private void remove(@NotNull SlashCommandInteractionEvent event,
+                        @NotNull DeferReplyWrapper deferReplyWrapper) {
+        Optional<UUID> playerOpt =
+                playerRequesterService.getProfileUuidOrReplay("player", event, deferReplyWrapper);
+        if (playerOpt.isEmpty()) return;
 
+        mutedPlayerRepository.deleteById(playerOpt.get());
 
-        deferReplay.replyError("TODO");
+        deferReplyWrapper.replyGood("Player " + playerOpt.get() + " unmuted");
     }
 
-    private static void list(@NotNull SlashCommandInteractionEvent event,
-                             @NotNull DeferReplyWrapper deferReplay) {
+    private void list(@NotNull SlashCommandInteractionEvent event,
+                      @NotNull DeferReplyWrapper deferReplyWrapper) {
+        int pageNumber = event.getOption("page", 1, OptionMapping::getAsInt);
 
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10);
+        Page<MutedPlayerModel> page = mutedPlayerRepository.findAll(pageable);
+
+
+        EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("Muted Player list ")
+                .setColor(Color.YELLOW);
+
+        List<MutedPlayerModel> playerModels = page.getContent();
+        if (playerModels.isEmpty()) {
+            builder.setDescription("There is no more information, try reducing the page number.");
+        } else {
+            for (MutedPlayerModel model : playerModels) {
+                MojangProfile profile = mojangAPI.getProfile(model.getPlayer());
+                String header = profile.getNameAndUuidAsText() + " until: " + model.getUnmuteTime();
+                String description = "Moderator: <@" + model.getModerator() + ">\nReason: " + model.getReason();
+
+                builder.addField(header, description, false);
+            }
+        }
+
+        builder.setFooter("Page " + pageNumber + " of " + page.getTotalPages());
+
+        deferReplyWrapper.replyEmbeds(builder.build());
     }
 
     @Nullable

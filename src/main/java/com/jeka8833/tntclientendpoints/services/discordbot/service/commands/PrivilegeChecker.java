@@ -1,7 +1,7 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.service;
+package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.models.DiscordUser;
+import com.jeka8833.tntclientendpoints.services.discordbot.models.DiscordUserModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.DiscordUserRepository;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -34,7 +34,7 @@ public class PrivilegeChecker {
     }
 
     public Optional<Set<String>> getRoles(long userID) {
-        Optional<DiscordUser> userOptional = userRepository.findById(userID);
+        Optional<DiscordUserModel> userOptional = userRepository.findById(userID);
         if (userOptional.isEmpty()) return Optional.empty();
 
         Set<String> roles = new HashSet<>(

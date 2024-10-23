@@ -4,20 +4,21 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
+
+import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "tnd_live_chat_list")
-public class ConnectedChat {
+@Table(name = "tnd_players")
+public class ConnectedPlayerModel {
     @Id
-    @Column(name = "chatID")
-    private long chatID;
+    @Column(name = "player")
+    private UUID player;
 
-    @Column(name = "userID")
-    private long userID;
+    @Column(name = "discord")
+    private long discord;
 
-    public ConnectedChat() {
+    public ConnectedPlayerModel() {
     }
 }

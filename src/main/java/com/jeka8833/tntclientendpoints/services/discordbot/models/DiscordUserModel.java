@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "discord_user")
-public class DiscordUser {
+public class DiscordUserModel {
     @Id
     @Column(name = "user")
     private long discordID;

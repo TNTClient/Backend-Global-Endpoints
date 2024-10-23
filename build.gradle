@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.5-SNAPSHOT'
     id 'io.spring.dependency-management' version '1.1.6'
+    id 'org.hibernate.orm' version '6.5.3.Final'
     id 'org.graalvm.buildtools.native' version '0.10.3'
 }
 
@@ -31,9 +32,9 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.google.cloud:spring-cloud-gcp-starter-vision'
     compileOnly 'org.projectlombok:lombok'
@@ -44,6 +45,14 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'org.mapstruct:mapstruct:1.6.2'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+
+    // https://mvnrepository.com/artifact/org.cache2k/cache2k-spring
+    implementation group: 'org.cache2k', name: 'cache2k-spring', version: '2.6.1.Final'
 
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
@@ -67,6 +76,12 @@ dependencyManagement {
     imports {
         mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+hibernate {
+    enhancement {
+        enableAssociationManagement = true
     }
 }
 

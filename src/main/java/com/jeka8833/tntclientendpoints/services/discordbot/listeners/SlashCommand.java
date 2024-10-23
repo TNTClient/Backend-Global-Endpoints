@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
 public interface SlashCommand {
     CommandData getCommandData();
 
-    void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event, @NotNull DeferReplyWrapper replyWrapper);
+    void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event, @NotNull DeferReplyWrapper deferReplyWrapper);
 }
