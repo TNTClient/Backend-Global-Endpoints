@@ -7,7 +7,7 @@ import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 @Slf4j
 @Service
@@ -20,10 +20,10 @@ public final class GitBackupService {
 
     GitBackupService(@Value("${tntclient.git.folder}") Path gitFolder,
                      @Value("${tntclient.git.backup.folder}") Path backupFolder,
-                     @Value("${tntclient.git.backup.intervalmin}") long backupIntervalMinutes) {
+                     @Value("${tntclient.git.backup.interval}") Duration backupInterval) {
         this.gitFolder = gitFolder;
         this.backupFolder = backupFolder;
-        this.backupIntervalNanos = TimeUnit.MINUTES.toNanos(backupIntervalMinutes);
+        this.backupIntervalNanos = backupInterval.toNanos();
     }
 
     public void tryBackup() {

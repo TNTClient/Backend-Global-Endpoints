@@ -81,11 +81,9 @@ public class LiveChatCommand implements SlashCommand {
 
     private void connect(@NotNull SlashCommandInteractionEvent event,
                          @NotNull DeferReplyWrapper deferReplyWrapper) {
-        connectedChatRepository.save(
-                ConnectedChatModel.builder()
-                        .chatID(event.getChannelIdLong())
-                        .userID(event.getUser().getIdLong())
-                        .build()
+        connectedChatRepository.save(new ConnectedChatModel(
+                event.getChannelIdLong(),
+                event.getUser().getIdLong())
         );
 
         deferReplyWrapper.replyGood("This channel is now connected to TNTClient chat.");
@@ -109,5 +107,7 @@ public class LiveChatCommand implements SlashCommand {
         if (playerOpt.isEmpty()) return;
 
         String server = event.getOption("server", "Unknown", OptionMapping::getAsString);
+
+
     }
 }

@@ -20,4 +20,12 @@ public record MojangProfile(@Nullable String name, @Nullable UUID uuid) {
             return name + " (" + uuid + ")";
         }
     }
+
+    @Nullable
+    public String getAvatarUrl() {
+        if (uuid != null) return "https://mc-heads.net/avatar/" + uuid;
+        if (name != null) return "https://mc-heads.net/avatar/" + name;
+
+        return null;
+    }
 }

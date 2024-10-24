@@ -120,26 +120,16 @@ public class MuteCommand implements SlashCommand {
             return;
         }
 
-        mutedPlayerRepository.save(MutedPlayerModel.builder()
-                .player(playerOpt.get())
-                .moderator(event.getUser().getIdLong())
-                .reason(descriptionString)
-                .unmuteTime(ZonedDateTime.now().plus(duration))
-                .build()
+        mutedPlayerRepository.save(new MutedPlayerModel(
+                playerOpt.get(),
+                event.getUser().getIdLong(),
+                descriptionString,
+                ZonedDateTime.now().plus(duration))
         );
 
         deferReplyWrapper.replyGood("Player muted");
 
-        liveChatService.sendGlobalMessage(
-                new EmbedBuilder()
-                        .setAuthor(
-                                event.getUser().getName() + "(" + event.getUser().getId() + ")",
-                                null,
-                                event.getUser().getAvatarUrl()
-                        )
-                        .setTitle("Muted player: " + playerOpt.get())
-                        .build()
-        );
+        liveChatService.sendGlobalWarning(event.getUser(), "Muted player: " + playerOpt.get());
     }
 
     private void remove(@NotNull SlashCommandInteractionEvent event,

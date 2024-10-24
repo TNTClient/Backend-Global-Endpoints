@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 

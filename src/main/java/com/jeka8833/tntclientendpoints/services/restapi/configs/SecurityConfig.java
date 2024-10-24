@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    @Value("${spring.security.cors.sites}")
+    @Value("${web.security.cors.sites}")
     private final List<String> corsSites;
 
     @Bean

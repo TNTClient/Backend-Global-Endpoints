@@ -12,28 +12,27 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CustomUserDetailsLoaderService implements UserDetailsService {
     private final TempSecurityTokenService tempSecurityTokenService;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final long tempTokenExpireTimeMinutes;
+    private final long tempTokenExpireTimeNanos;
 
     public CustomUserDetailsLoaderService(TempSecurityTokenService tempSecurityTokenService,
                                           UserRepository userRepository, UserService userService,
-                                          @Value("${spring.security.temptoken.expireMinutes}")
-                                          long tempTokenExpireTimeMinutes) {
+                                          @Value("${web.security.temptoken.expire}") Duration tempTokenExpireTime) {
         this.tempSecurityTokenService = tempSecurityTokenService;
         this.userRepository = userRepository;
         this.userService = userService;
-        this.tempTokenExpireTimeMinutes = tempTokenExpireTimeMinutes;
+        this.tempTokenExpireTimeNanos = tempTokenExpireTime.toNanos();
 
-        if (tempTokenExpireTimeMinutes <= 0) {
-            throw new IllegalArgumentException("tempTokenExpireTimeMinutes must be greater than 0");
+        if (tempTokenExpireTimeNanos <= 0) {
+            throw new IllegalArgumentException("tempTokenExpireTime must be greater than 0");
         }
     }
 
@@ -46,7 +45,7 @@ public class CustomUserDetailsLoaderService implements UserDetailsService {
         if (securityUser == null) return;
 
         if (!securityUser.isLoginSuccess()) {
-            securityUser.setExpireAtNanos(System.nanoTime() + TimeUnit.MINUTES.toNanos(tempTokenExpireTimeMinutes));
+            securityUser.setExpireAtNanos(System.nanoTime() + tempTokenExpireTimeNanos);
 
             securityUser.setLoginSuccess(true);
         }
