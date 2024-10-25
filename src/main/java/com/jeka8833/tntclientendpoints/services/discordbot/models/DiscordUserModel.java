@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Getter
+
 @Entity
 @Table(name = "discord_user")
 public class DiscordUserModel {

@@ -15,9 +15,11 @@ public class CachingConfig {
     @Bean
     public CacheManager cacheManager() {
         return new SpringCache2kCacheManager()
-                .defaultSetup(cache -> cache.entryCapacity(10_000).expireAfterWrite(1, TimeUnit.HOURS))
+                .defaultSetup(cache -> cache.entryCapacity(10_000)
+                        .expireAfterWrite(1, TimeUnit.HOURS).permitNullValues(false))
 
                 .addCache(cache ->
-                        cache.name("mojang").entryCapacity(2_000).expireAfterWrite(1, TimeUnit.DAYS));
+                        cache.name("mojang").entryCapacity(2_000).expireAfterWrite(1, TimeUnit.DAYS)
+                                .permitNullValues(false));
     }
 }

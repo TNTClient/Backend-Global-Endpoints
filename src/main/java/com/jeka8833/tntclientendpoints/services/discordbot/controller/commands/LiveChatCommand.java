@@ -1,11 +1,14 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.commands;
+package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommand;
+import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SelectMenuListener;
+import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
+import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.MinecraftServer;
+import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.TNTClientApi;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -14,19 +17,23 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class LiveChatCommand implements SlashCommand {
+public class LiveChatCommand implements SlashCommandEvent {
 
+    private final TNTClientApi tntClientApi;
     private final PrivilegeChecker privilegeChecker;
     private final PlayerRequesterService playerRequesterService;
     private final ConnectedChatRepository connectedChatRepository;
+    private final SelectMenuListener selectMenuListener;
 
     @Override
     public CommandData getCommandData() {
@@ -52,15 +59,20 @@ public class LiveChatCommand implements SlashCommand {
                                 new OptionData(OptionType.STRING, "receiver",
                                         "The recipient of the message, if the field is not specified, " +
                                                 "the message is public.", false)
-                                        .setMinLength(1)
-                                        .setMaxLength(36),
+                                        .setRequiredLength(1, 36),
 
                                 new OptionData(OptionType.STRING, "server",
                                         "Specifies the server on which the message will be visible.",
                                         false)
-                                        .addChoice("Global", "Unknown")
-                                        .addChoice("Hypixel", "Hypixel")
-                                        .addChoice("TNT Server", "Odyssey")
+
+                                        .addChoice(MinecraftServer.GLOBAL.getReadableName(),
+                                                MinecraftServer.GLOBAL.name())
+
+                                        .addChoice(MinecraftServer.HYPIXEL.getReadableName(),
+                                                MinecraftServer.HYPIXEL.name())
+
+                                        .addChoice(MinecraftServer.TNT_RUN.getReadableName(),
+                                                MinecraftServer.TNT_RUN.name())
                         )
         );
     }
@@ -102,12 +114,20 @@ public class LiveChatCommand implements SlashCommand {
                       @NotNull DeferReplyWrapper deferReplyWrapper) {
         String message = event.getOption("message", "", OptionMapping::getAsString);
 
-        Optional<UUID> playerOpt =
-                playerRequesterService.getProfileUuidOrReplay("receiver", event, deferReplyWrapper);
-        if (playerOpt.isEmpty()) return;
+        Optional<UUID> playerOpt = playerRequesterService.getProfileUuid("receiver", event);
 
-        String server = event.getOption("server", "Unknown", OptionMapping::getAsString);
+        MinecraftServer server = event.getOption("server", MinecraftServer.GLOBAL, optionMapping -> {
+            try {
+                return MinecraftServer.valueOf(optionMapping.getAsString());
+            } catch (Exception e) {
+                return MinecraftServer.GLOBAL;
+            }
+        });
 
-
+        selectMenuListener.sendMessageWithOptions(deferReplyWrapper.createCustomReply().sendMessage("Choose a player"), List.of(
+                SelectOption.of("None", "none"),
+                SelectOption.of("All", "all")), (selected, hook) -> {
+            System.out.println(selected.getFirst());
+        });
     }
 }

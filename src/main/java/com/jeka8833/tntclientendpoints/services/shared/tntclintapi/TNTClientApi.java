@@ -6,7 +6,6 @@ import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.client
 import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.clientbound.ClientboundWebToken;
 import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundAuth;
 import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundChat;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundDiscordToken;
 import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundWebToken;
 import com.jeka8833.toprotocol.core.packet.PacketBase;
 import com.jeka8833.toprotocol.core.register.ClientPacketRegistry;
@@ -40,7 +39,6 @@ public class TNTClientApi {
                     })
                     .register((byte) 00, build -> { // TODO: Add packet
                         build.clientbound(ClientboundDiscordTocken.class, ClientboundDiscordTocken::new);
-                        build.serverbound(ServerboundDiscordToken.class, ServerboundDiscordToken::new);
                     })
                     .register((byte) 253, build -> {
                         build.clientbound(ClientboundWebToken.class, ClientboundWebToken::new);

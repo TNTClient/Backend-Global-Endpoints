@@ -1,5 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound;
 
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
 import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.MinecraftServer;
 import com.jeka8833.toprotocol.core.packet.PacketBase;
 import com.jeka8833.toprotocol.core.serializer.PacketInputSerializer;
@@ -27,6 +28,18 @@ public final class ServerboundChat implements PacketBase {
         this.message = serializer.readString();
     }
 
+    public ServerboundChat(UUID receiver, String message) {
+        this(EMPTY_UUID, receiver, MinecraftServer.GLOBAL, message);
+    }
+
+    public ServerboundChat(UUID sender, UUID receiver, String message) {
+        this(sender, receiver, MinecraftServer.GLOBAL, message);
+    }
+
+    public ServerboundChat(UUID sender, MinecraftServer server, String message) {
+        this(sender, EMPTY_UUID, server, message);
+    }
+
     @Override
     public void write(PacketOutputSerializer serializer) {
         serializer
@@ -36,7 +49,11 @@ public final class ServerboundChat implements PacketBase {
                 .writeString(message);
     }
 
+    public boolean containsSender() {
+        return MojangAPI.isPlayerUUID(sender);
+    }
+
     public boolean containsReceiver() {
-        return receiver != null && !receiver.equals(EMPTY_UUID);
+        return MojangAPI.isPlayerUUID(receiver);
     }
 }

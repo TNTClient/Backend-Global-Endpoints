@@ -1,7 +1,7 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.commands;
+package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommand;
+import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.ConnectTokenService;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AccountCommand implements SlashCommand {
+public class AccountCommand implements SlashCommandEvent {
     private final ConnectTokenService connectTokenService;
 
     @Override

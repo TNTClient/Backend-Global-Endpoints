@@ -6,6 +6,7 @@ import com.jeka8833.toprotocol.core.serializer.PacketOutputSerializer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -28,10 +29,12 @@ public final class ServerboundWebToken implements PacketBase {
 
     @Override
     public void write(PacketOutputSerializer serializer) {
-        serializer.writeUUID(user).writeUUID(token);
+        serializer
+                .writeUUID(Objects.requireNonNullElse(user, EMPTY_UUID))
+                .writeUUID(Objects.requireNonNullElse(token, EMPTY_UUID));
     }
 
-    public boolean isLoggedOff() {
-        return token.equals(EMPTY_UUID);
+    public boolean isLogOutOperation() {
+        return token == null || token.equals(EMPTY_UUID);
     }
 }

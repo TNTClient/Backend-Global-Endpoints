@@ -1,7 +1,7 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.commands;
+package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommand;
+import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.MutedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.MutedPlayerRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.LiveChatService;
@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
-public class MuteCommand implements SlashCommand {
+public class MuteCommand implements SlashCommandEvent {
     private static final Map<Pattern, TimeUnit> regexToTimeUnit = Map.of(
             Pattern.compile("^(\\d+)s$"), TimeUnit.SECONDS,
             Pattern.compile("^(\\d+)m$"), TimeUnit.MINUTES,
@@ -60,27 +60,27 @@ public class MuteCommand implements SlashCommand {
                         .addOptions(
                                 new OptionData(OptionType.STRING, "player",
                                         "The player name or uuid to mute", true)
-                                        .setMinLength(1)
-                                        .setMaxLength(36),
+
+                                        .setRequiredLength(1, 36),
 
                                 new OptionData(OptionType.STRING, "description",
                                         "The reason for the mute", true)
-                                        .setMinLength(1)
-                                        .setMaxLength(512),
+
+                                        .setRequiredLength(1, 512),
 
                                 new OptionData(OptionType.STRING, "time",
                                         "The time for the mute, format: \"1d 2h 3m 4s\" it`s 1 day 2 hours " +
                                                 "3 minutes 4 seconds", true)
-                                        .setMinLength(2)
-                                        .setMaxLength(32)
+
+                                        .setRequiredLength(2, 32)
                         ),
 
                 new SubcommandData("remove", "Remove a player to the Mute list for TNTClient Chat.")
 
                         .addOptions(new OptionData(OptionType.STRING, "player",
                                 "The player name or uuid to mute", true)
-                                .setMinLength(1)
-                                .setMaxLength(36)),
+
+                                .setRequiredLength(1, 36)),
 
                 new SubcommandData("list", "Mute list for TNTClient Chat.")
 

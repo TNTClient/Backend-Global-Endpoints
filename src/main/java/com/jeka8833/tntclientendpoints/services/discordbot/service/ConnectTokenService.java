@@ -36,11 +36,13 @@ public class ConnectTokenService {
         return token;
     }
 
-    public void connect(UUID player, int token) {
+    public boolean connect(UUID player, int token) {
         Long discordID = cache.peekAndRemove(token);
-        if (discordID == null) return;
+        if (discordID == null) return false;
 
         connectedPlayerRepository.save(new ConnectedPlayerModel(player, discordID));
+
+        return true;
     }
 
     public void disconnect(long discordID) {

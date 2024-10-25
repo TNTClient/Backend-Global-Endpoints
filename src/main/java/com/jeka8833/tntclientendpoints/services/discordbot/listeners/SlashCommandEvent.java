@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;
 
-public interface SlashCommand {
+public interface SlashCommandEvent {
     CommandData getCommandData();
 
     void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event, @NotNull DeferReplyWrapper deferReplyWrapper);

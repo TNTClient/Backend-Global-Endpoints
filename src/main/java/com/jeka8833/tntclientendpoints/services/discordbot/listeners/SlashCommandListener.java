@@ -16,9 +16,9 @@ import java.util.Map;
 @Slf4j
 @Component
 public class SlashCommandListener extends ListenerAdapter {
-    public final Map<String, SlashCommand> slashCommands;
+    private final Map<String, SlashCommandEvent> slashCommands;
 
-    public SlashCommandListener(Collection<SlashCommand> slashCommands, JDA jda) {
+    public SlashCommandListener(Collection<SlashCommandEvent> slashCommands, JDA jda) {
         this.slashCommands = getCommandsMap(slashCommands);
 
         jda.addEventListener(this);
@@ -29,7 +29,7 @@ public class SlashCommandListener extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-        SlashCommand slashCommand = slashCommands.get(event.getName());
+        SlashCommandEvent slashCommand = slashCommands.get(event.getName());
         if (slashCommand == null) return;
 
         try (var deferReplay = new DeferReplyWrapper(event)) {
@@ -43,16 +43,16 @@ public class SlashCommandListener extends ListenerAdapter {
         }
     }
 
-    private static Collection<CommandData> getCommandsData(Collection<SlashCommand> slashCommands) {
+    private static Collection<CommandData> getCommandsData(Collection<SlashCommandEvent> slashCommands) {
         return slashCommands.stream()
-                .map(SlashCommand::getCommandData)
+                .map(SlashCommandEvent::getCommandData)
                 .toList();
     }
 
-    private static Map<String, SlashCommand> getCommandsMap(Collection<SlashCommand> slashCommands) {
-        Map<String, SlashCommand> commandsMap = new HashMap<>(slashCommands.size());
+    private static Map<String, SlashCommandEvent> getCommandsMap(Collection<SlashCommandEvent> slashCommands) {
+        Map<String, SlashCommandEvent> commandsMap = new HashMap<>(slashCommands.size());
 
-        for (SlashCommand command : slashCommands) {
+        for (SlashCommandEvent command : slashCommands) {
             commandsMap.put(command.getCommandData().getName(), command);
         }
 

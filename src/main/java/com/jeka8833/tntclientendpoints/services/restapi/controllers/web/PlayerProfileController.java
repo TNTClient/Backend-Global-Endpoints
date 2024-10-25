@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.restapi.controllers;
+package com.jeka8833.tntclientendpoints.services.restapi.controllers.web;
 
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.PostTabDto;

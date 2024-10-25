@@ -5,7 +5,6 @@ import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +18,18 @@ public class PlayerRequesterService {
 
     public Optional<UUID> getProfileUuidOrReplay(String optionName, @NotNull SlashCommandInteractionEvent event,
                                                  @NotNull DeferReplyWrapper deferReply) {
-        String playerString = event.getOption(optionName, "", OptionMapping::getAsString);
+        Optional<UUID> playerUUID = getProfileUuid(optionName, event);
 
-        Optional<UUID> playerUUID = getProfileUUID(playerString);
         if (playerUUID.isEmpty()) {
             deferReply.replyError("Invalid player name or uuid. Or maybe Mojang API is down.");
         }
 
         return playerUUID;
+    }
+
+    public Optional<UUID> getProfileUuid(String optionName, @NotNull SlashCommandInteractionEvent event) {
+        return event.getOption(optionName, Optional.empty(), optionMapping ->
+                getProfileUUID(optionMapping.getAsString()));
     }
 
     private Optional<UUID> getProfileUUID(String uuidOrName) {

@@ -12,12 +12,12 @@ public enum MinecraftServer {
     GLOBAL("Global", "Unknown"),
     ;
 
-    private final String name;
+    private final String readableName;
     private final String tntApiName;
 
     public static MinecraftServer fromTntApiName(@Nullable String name) {
         for (MinecraftServer server : MinecraftServer.values()) {
-            if (server.getName().equalsIgnoreCase(name)) {
+            if (server.getReadableName().equalsIgnoreCase(name)) {
                 return server;
             }
         }

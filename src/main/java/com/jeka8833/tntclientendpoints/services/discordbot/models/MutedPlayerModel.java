@@ -10,8 +10,8 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Entity
 @Table(name = "tnd_muted_users")

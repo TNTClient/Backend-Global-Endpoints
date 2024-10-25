@@ -7,8 +7,8 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Entity
 @Table(name = "tnd_live_chat_list")

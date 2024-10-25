@@ -16,10 +16,10 @@ public class TntClientApiConfig {
 
     @Bean
     public TNTClientApi tntClientAPI(OkHttpClient okHttpClient,
-                                     @Value("${tntclient.api.url: wss://tnthypixel.jeka8833.pp.ua}") String requestUrl,
+                                     @Value("${tntclient.api.url:wss://tnthypixel.jeka8833.pp.ua}") String requestUrl,
                                      @Value("${tntclient.api.user}") UUID user,
                                      @Value("${tntclient.api.password}") UUID password,
-                                     @Value("${tntclient.api.reconnectdelay: 10s}") Duration reconnectDelay) {
+                                     @Value("${tntclient.api.reconnectdelay:10s}") Duration reconnectDelay) {
         return new TNTClientApi(
                 new Request.Builder().url(requestUrl).build(),
                 okHttpClient,

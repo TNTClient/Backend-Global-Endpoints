@@ -1,14 +1,14 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab;
 
+import com.jeka8833.tntclientendpoints.services.shared.minecraft.ChatColor;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;
 
 @Service
 public class TabFilterService {
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    private static final char COLOR_CHAR = '\u00A7';
-    private static final Pattern STRIP_COLOR = Pattern.compile("(?i)[&" + COLOR_CHAR + "][0-9A-FK-OR]");
+    private static final Pattern STRIP_COLOR =
+            Pattern.compile("(?i)[&" + ChatColor.COLOR_CHAR + "][0-9A-FK-OR]");
 
     public boolean isValidAnimation(String[] animation) {
         if (animation == null || animation.length == 0 || animation.length > 16) return false;
@@ -38,8 +38,8 @@ public class TabFilterService {
             } else {
                 animationCopy[i] = normalizeColorCodes(animation[i]);
 
-                if (!animationCopy[i].endsWith(COLOR_CHAR + "r")) {
-                    animationCopy[i] += COLOR_CHAR + "r";
+                if (!animationCopy[i].endsWith(ChatColor.RESET)) {
+                    animationCopy[i] += ChatColor.RESET;
                 }
             }
         }
@@ -56,8 +56,9 @@ public class TabFilterService {
     private static String normalizeColorCodes(String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
-            if ((b[i] == '&' || b[i] == COLOR_CHAR) && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
-                b[i] = COLOR_CHAR;
+            if ((b[i] == '&' || b[i] == ChatColor.COLOR_CHAR) &&
+                    "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+                b[i] = ChatColor.COLOR_CHAR;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
         }

@@ -42,10 +42,10 @@ public class LiveChatService {
         if (receiver != null) {
             MojangProfile receiverProfile = mojangAPI.getProfile(receiver);
 
-            builder.setFooter("From " + receiverProfile.getNameAndUuidAsText() + "; Server: " + server.getName(),
+            builder.setFooter("From " + receiverProfile.getNameAndUuidAsText() + "; Server: " + server.getReadableName(),
                     receiverProfile.getAvatarUrl());
         } else {
-            builder.setFooter("Server: " + server.getName());
+            builder.setFooter("Server: " + server.getReadableName());
         }
 
         sendGlobalMessage(builder.build());
