@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {
         "com.jeka8833.tntclientendpoints.services.discordbot",
-        "com.jeka8833.tntclientendpoints.services.shared.okhttp",
-        "com.jeka8833.tntclientendpoints.services.shared.tntclintapi"
+        "com.jeka8833.tntclientendpoints.services.general"
 })
 public class RunDiscordBot {
     public static void main(String[] args) {

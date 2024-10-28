@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.shared.minecraft;
+package com.jeka8833.tntclientendpoints.services.general.minecraft;
 
 public final class ChatColor {
     public static final char COLOR_CHAR = '§';

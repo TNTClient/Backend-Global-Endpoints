@@ -40,12 +40,12 @@ public class ConnectTokenService {
         Long discordID = cache.peekAndRemove(token);
         if (discordID == null) return false;
 
-        connectedPlayerRepository.save(new ConnectedPlayerModel(player, discordID));
+        connectedPlayerRepository.save(new ConnectedPlayerModel(discordID, player));
 
         return true;
     }
 
     public void disconnect(long discordID) {
-        connectedPlayerRepository.deleteAllByDiscord(discordID);
+        connectedPlayerRepository.deleteById(discordID);
     }
 }

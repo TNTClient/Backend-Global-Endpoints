@@ -2,9 +2,9 @@ package com.jeka8833.tntclientendpoints.services.restapi.controllers.web;
 
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.PostTabDto;
-import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.TabService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.ProfileService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape.CapeService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.TabService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

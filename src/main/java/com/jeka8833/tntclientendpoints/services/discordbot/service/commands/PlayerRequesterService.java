@@ -2,7 +2,7 @@ package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
 
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PlayerRequesterService {
-    private final MojangAPI mojangAPI;
+    private final MojangApi mojangAPI;
 
     public Optional<UUID> getProfileUuidOrReplay(String optionName, @NotNull SlashCommandInteractionEvent event,
                                                  @NotNull DeferReplyWrapper deferReply) {
@@ -33,7 +33,7 @@ public class PlayerRequesterService {
     }
 
     private Optional<UUID> getProfileUUID(String uuidOrName) {
-        if (MojangAPI.isPlayerName(uuidOrName)) {
+        if (MojangApi.isPlayerName(uuidOrName)) {
             return Optional.ofNullable(mojangAPI.getProfile(uuidOrName).uuid());
         } else {
             try {

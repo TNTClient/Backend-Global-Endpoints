@@ -1,12 +1,12 @@
-package com.jeka8833.tntclientendpoints.services.shared.tntclintapi;
+package com.jeka8833.tntclientendpoints.services.general.tntclintapi;
 
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.clientbound.ClientboundAuth;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.clientbound.ClientboundChat;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.clientbound.ClientboundDiscordTocken;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.clientbound.ClientboundWebToken;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundAuth;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundChat;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound.ServerboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundDiscordTocken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundWebToken;
 import com.jeka8833.toprotocol.core.packet.PacketBase;
 import com.jeka8833.toprotocol.core.register.ClientPacketRegistry;
 import com.jeka8833.toprotocol.core.register.PacketRegistryBuilder;

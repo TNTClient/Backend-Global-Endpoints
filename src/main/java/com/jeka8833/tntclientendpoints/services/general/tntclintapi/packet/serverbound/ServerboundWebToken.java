@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.shared.tntclintapi.packet.serverbound;
+package com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound;
 
 import com.jeka8833.toprotocol.core.packet.PacketBase;
 import com.jeka8833.toprotocol.core.serializer.PacketInputSerializer;

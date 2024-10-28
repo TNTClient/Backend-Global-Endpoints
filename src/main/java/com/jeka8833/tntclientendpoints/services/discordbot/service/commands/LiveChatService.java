@@ -3,8 +3,8 @@ package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.MinecraftServer;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.MinecraftServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -26,7 +26,7 @@ import java.util.UUID;
 public class LiveChatService {
 
     private final JDA jda;
-    private final MojangAPI mojangAPI;
+    private final MojangApi mojangAPI;
     private final ConnectedChatRepository connectedChatRepository;
 
     public void sendGlobalMinecraftMessage(@NotNull UUID player, @Nullable UUID receiver,

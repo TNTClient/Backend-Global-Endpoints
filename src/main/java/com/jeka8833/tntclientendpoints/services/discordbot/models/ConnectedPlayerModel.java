@@ -19,9 +19,9 @@ import java.util.UUID;
 @Table(name = "tnd_players")
 public class ConnectedPlayerModel {
     @Id
-    @Column(name = "player")
-    private UUID player;
-
     @Column(name = "discord")
     private long discord;
+
+    @Column(name = "player")
+    private UUID player;
 }

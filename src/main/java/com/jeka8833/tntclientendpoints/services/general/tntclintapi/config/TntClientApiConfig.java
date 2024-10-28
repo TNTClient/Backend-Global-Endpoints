@@ -1,6 +1,6 @@
-package com.jeka8833.tntclientendpoints.services.shared.tntclintapi.config;
+package com.jeka8833.tntclientendpoints.services.general.tntclintapi.config;
 
-import com.jeka8833.tntclientendpoints.services.shared.tntclintapi.TNTClientApi;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.TNTClientApi;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.springframework.beans.factory.annotation.Value;

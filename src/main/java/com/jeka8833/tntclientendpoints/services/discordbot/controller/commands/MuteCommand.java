@@ -8,7 +8,7 @@ import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.Live
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangAPI;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -30,11 +30,10 @@ import java.awt.*;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -47,7 +46,7 @@ public class MuteCommand implements SlashCommandEvent {
     );
 
     private final PrivilegeChecker privilegeChecker;
-    private final MojangAPI mojangAPI;
+    private final MojangApi mojangAPI;
     private final PlayerRequesterService playerRequesterService;
     private final MutedPlayerRepository mutedPlayerRepository;
     private final LiveChatService liveChatService;
@@ -159,8 +158,13 @@ public class MuteCommand implements SlashCommandEvent {
         if (playerModels.isEmpty()) {
             builder.setDescription("There is no more information, try reducing the page number.");
         } else {
+            Set<UUID> playerUUIDs = playerModels.stream()
+                    .map(MutedPlayerModel::getPlayer)
+                    .collect(Collectors.toSet());
+            Map<UUID, MojangProfile> profiles = mojangAPI.getProfiles(playerUUIDs);
+
             for (MutedPlayerModel model : playerModels) {
-                MojangProfile profile = mojangAPI.getProfile(model.getPlayer());
+                MojangProfile profile = profiles.get(model.getPlayer());
                 String header = profile.getNameAndUuidAsText() + " until: " + model.getUnmuteTime();
                 String description = "Moderator: <@" + model.getModerator() + ">\nReason: " + model.getReason();
 

@@ -21,7 +21,6 @@ public class SlashCommandListener extends ListenerAdapter {
     public SlashCommandListener(Collection<SlashCommandEvent> slashCommands, JDA jda) {
         this.slashCommands = getCommandsMap(slashCommands);
 
-        jda.addEventListener(this);
         jda.updateCommands()
                 .addCommands(getCommandsData(slashCommands))
                 .queue();

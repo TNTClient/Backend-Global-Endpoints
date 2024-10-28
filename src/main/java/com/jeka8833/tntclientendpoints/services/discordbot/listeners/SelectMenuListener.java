@@ -1,6 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import net.dv8tion.jda.api.JDA;
+import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Component
 public class SelectMenuListener extends ListenerAdapter {
     private final String prefix = String.valueOf(System.currentTimeMillis());
@@ -26,16 +28,22 @@ public class SelectMenuListener extends ListenerAdapter {
             .expireAfterWrite(15, TimeUnit.MINUTES)
             .build();
 
-    public SelectMenuListener(JDA jda) {
-        jda.addEventListener(this);
-    }
-
     @Override
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
+        event.deferEdit().queue(hook -> hook.deleteOriginal().queue());
+
         SelectMenuEvent consumer = cache.peekAndRemove(event.getComponentId());
         if (consumer == null) return;
 
-        consumer.onSelect(event.getValues(), event.getHook());
+        try (var deferReply = new DeferReplyWrapper(event)) {
+            try {
+                consumer.onSelect(event.getValues(), deferReply);
+            } catch (Exception e) {
+                log.warn("Select menu has error, selected: {}", event.getValues(), e);
+
+                deferReply.replyError("Internal server error");
+            }
+        }
     }
 
     public void sendMessageWithOptions(WebhookMessageCreateAction<?> message, Collection<SelectOption> options,

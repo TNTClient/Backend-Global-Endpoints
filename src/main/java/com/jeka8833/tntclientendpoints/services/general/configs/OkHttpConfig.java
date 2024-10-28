@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.shared.okhttp;
+package com.jeka8833.tntclientendpoints.services.general.configs;
 
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
