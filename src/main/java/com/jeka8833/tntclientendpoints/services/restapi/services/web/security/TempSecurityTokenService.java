@@ -13,19 +13,15 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.random.RandomGenerator;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TempSecurityTokenService {
-    private static final RandomGenerator secureRandom = new SecureRandom();
-
     private final Map<UUID, SecurityUser> tempUsers = new ConcurrentHashMap<>();
 
     private final SessionRegistry sessionRegistry;
@@ -33,7 +29,7 @@ public class TempSecurityTokenService {
     @NotNull
     public SecurityUser create(@NotNull UUID user, long expireTimeNanos) {
         SecurityUser securityUser = new SecurityUser(user);
-        securityUser.setPassword(generateUUID());
+        securityUser.setPassword(UUID.randomUUID());
         securityUser.setExpireAtNanos(System.nanoTime() + expireTimeNanos);
 
         tempUsers.put(user, securityUser);
@@ -74,9 +70,5 @@ public class TempSecurityTokenService {
         } catch (Exception ex) {
             log.warn("Failed to kill expired session", ex);
         }
-    }
-
-    private static UUID generateUUID() {
-        return new UUID(secureRandom.nextLong(), secureRandom.nextLong());
     }
 }

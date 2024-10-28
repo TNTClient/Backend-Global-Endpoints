@@ -23,27 +23,26 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LiveChatService {
-
+public class GlobalLiveChatService {
     private final JDA jda;
     private final MojangApi mojangAPI;
     private final ConnectedChatRepository connectedChatRepository;
 
-    public void sendGlobalMinecraftMessage(@NotNull UUID player, @Nullable UUID receiver,
-                                           @NotNull MinecraftServer server, @NotNull String message) {
-        MojangProfile profile = mojangAPI.getProfile(player);
+    public void sendMinecraftChatMessage(@NotNull UUID sender, @Nullable UUID receiver,
+                                         @NotNull MinecraftServer server, @NotNull String message) {
+        MojangProfile senderProfile = mojangAPI.getProfile(sender);
 
         EmbedBuilder builder = new EmbedBuilder()
                 .setColor(Color.CYAN)
-                .setAuthor(profile.getNameAndUuidAsText(), null, profile.getAvatarUrl())
+                .setAuthor(senderProfile.getNameAndUuidAsText(), null, senderProfile.getAvatarUrl())
                 .setDescription(message)
                 .setTimestamp(ZonedDateTime.now());
 
-        if (receiver != null) {
-            MojangProfile receiverProfile = mojangAPI.getProfile(receiver);
+        MojangProfile receiverProfile = mojangAPI.getProfile(receiver);
 
-            builder.setFooter("From " + receiverProfile.getNameAndUuidAsText() + "; Server: " + server.getReadableName(),
-                    receiverProfile.getAvatarUrl());
+        if (receiverProfile.isFullAbsent()) {
+            builder.setFooter("From " + receiverProfile.getNameAndUuidAsText() +
+                    "; Server: " + server.getReadableName(), receiverProfile.getAvatarUrl());
         } else {
             builder.setFooter("Server: " + server.getReadableName());
         }
@@ -62,18 +61,20 @@ public class LiveChatService {
 
     public void sendGlobalMessage(MessageEmbed message) {
         for (ConnectedChatModel connectedChatModel : connectedChatRepository.findAll()) {
-            try {
-                TextChannel channel = jda.getTextChannelById(connectedChatModel.getChatID());
-                if (channel == null) {
-                    connectedChatRepository.deleteById(connectedChatModel.getChatID());
+            long chatID = connectedChatModel.getChatID();
 
-                    log.warn("Delete global chat for: {}", connectedChatModel.getChatID());
+            try {
+                TextChannel channel = jda.getTextChannelById(chatID);
+                if (channel == null) {
+                    connectedChatRepository.deleteById(chatID);
+
+                    log.warn("Delete global chat for: {}", chatID);
                     continue;
                 }
 
                 channel.sendMessageEmbeds(message).queue();
             } catch (Exception e) {
-                log.warn("Failed to send global message to: {}", connectedChatModel.getChatID(), e);
+                log.warn("Failed to send global message to: {}", chatID, e);
             }
         }
     }

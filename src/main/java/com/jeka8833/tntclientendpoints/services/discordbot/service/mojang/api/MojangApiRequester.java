@@ -25,7 +25,7 @@ class MojangApiRequester {
     private final ObjectMapper objectMapper;
     private final MojangProfileMapper mojangProfileMapper;
 
-    @Cacheable(value = "mojang", unless = "!#result.isCompleted")
+    @Cacheable(value = "mojang", unless = "!#result.fullCompleted")
     public MojangProfile getProfile(String name) {
         Request request = new Request.Builder()
                 .url("https://api.mojang.com/users/profiles/minecraft/" + name)
@@ -40,7 +40,7 @@ class MojangApiRequester {
         return new MojangProfile(name, null);
     }
 
-    @Cacheable(value = "mojang", unless = "!#result.isCompleted")
+    @Cacheable(value = "mojang", unless = "!#result.fullCompleted")
     public MojangProfile getProfile(UUID uuid) {
         Request request = new Request.Builder()
                 .url("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid)

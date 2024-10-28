@@ -1,6 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -31,13 +32,15 @@ public class SlashCommandListener extends ListenerAdapter {
         SlashCommandEvent slashCommand = slashCommands.get(event.getName());
         if (slashCommand == null) return;
 
-        try (var deferReplay = new DeferReplyWrapper(event)) {
+        try (var deferReply = new DeferReplyWrapper(event)) {
             try {
-                slashCommand.onSlashCommandInteraction(event, deferReplay);
+                slashCommand.onSlashCommandInteraction(event, deferReply);
+            } catch (SendErrorMessageDiscord e) {
+                deferReply.replyError(e.getMessage());
             } catch (Exception e) {
                 log.warn("Slash command {} has error: {}", event.getName(), e.getMessage());
 
-                deferReplay.replyError("Internal server error");
+                deferReply.replyError("Internal server error");
             }
         }
     }

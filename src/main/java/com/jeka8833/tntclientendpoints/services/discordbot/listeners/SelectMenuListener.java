@@ -1,6 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -35,9 +36,11 @@ public class SelectMenuListener extends ListenerAdapter {
         SelectMenuEvent consumer = cache.peekAndRemove(event.getComponentId());
         if (consumer == null) return;
 
-        try (var deferReply = new DeferReplyWrapper(event)) {
+        try (var deferReply = new ReplyWrapper(event)) {
             try {
                 consumer.onSelect(event.getValues(), deferReply);
+            } catch (SendErrorMessageDiscord e) {
+                deferReply.replyError(e.getMessage());
             } catch (Exception e) {
                 log.warn("Select menu has error, selected: {}", event.getValues(), e);
 

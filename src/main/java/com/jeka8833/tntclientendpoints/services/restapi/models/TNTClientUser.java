@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -17,8 +18,8 @@ public class TNTClientUser {
     private UUID id;
 
     @Column(name = "roles")
-    private String roles;
+    private @Nullable String roles;
 
     @Column(name = "staticKey")
-    private UUID staticKey;
+    private @Nullable UUID staticKey;
 }

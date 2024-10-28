@@ -64,7 +64,9 @@ public class CustomUserDetailsLoaderService implements UserDetailsService {
         if (databaseUserOpt.isPresent()) {
             TNTClientUser databaseUser = databaseUserOpt.get();
 
-            securityUser.setAuthorities(databaseUser.getRoles());
+            if (databaseUser.getRoles() != null) {
+                securityUser.setAuthorities(databaseUser.getRoles());
+            }
 
             if (databaseUser.getStaticKey() != null) {
                 securityUser.setPassword(databaseUser.getStaticKey());

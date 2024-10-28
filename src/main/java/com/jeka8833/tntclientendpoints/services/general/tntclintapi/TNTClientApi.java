@@ -2,7 +2,7 @@ package com.jeka8833.tntclientendpoints.services.general.tntclintapi;
 
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundAuth;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundDiscordTocken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundDiscordToken;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundWebToken;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundAuth;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
@@ -33,12 +33,12 @@ public class TNTClientApi {
 
     private static final ClientPacketRegistry<Byte, PacketBase, PacketBase> PACKET_REGISTRY =
             new PacketRegistryBuilder<Byte, PacketBase, PacketBase>()
-                    .register((byte) 00, build -> { // TODO: Add packet
+                    .register((byte) 248, build -> {
                         build.clientbound(ClientboundChat.class, ClientboundChat::new);
                         build.serverbound(ServerboundChat.class, ServerboundChat::new);
                     })
                     .register((byte) 00, build -> { // TODO: Add packet
-                        build.clientbound(ClientboundDiscordTocken.class, ClientboundDiscordTocken::new);
+                        build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new);
                     })
                     .register((byte) 253, build -> {
                         build.clientbound(ClientboundWebToken.class, ClientboundWebToken::new);

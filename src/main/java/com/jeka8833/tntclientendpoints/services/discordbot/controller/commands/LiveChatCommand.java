@@ -1,12 +1,14 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SelectMenuListener;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedPlayerRepository;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.GlobalLiveChatService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
@@ -39,6 +41,7 @@ public class LiveChatCommand implements SlashCommandEvent {
     private final TNTClientApi tntClientApi;
     private final PrivilegeChecker privilegeChecker;
     private final SelectMenuListener selectMenuListener;
+    private final GlobalLiveChatService globalLiveChatService;
     private final PlayerRequesterService playerRequesterService;
     private final ConnectedChatRepository connectedChatRepository;
     private final ConnectedPlayerRepository connectedPlayerRepository;
@@ -87,45 +90,41 @@ public class LiveChatCommand implements SlashCommandEvent {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event,
-                                          @NotNull DeferReplyWrapper deferReplyWrapper) {
-        if (privilegeChecker.hasNoAccess(event, deferReplyWrapper, "LIVE_CHAT")) return;
+                                          @NotNull ReplyWrapper replyWrapper) {
+        if (privilegeChecker.hasNoAccess(event, replyWrapper, "LIVE_CHAT")) return;
 
         switch (event.getSubcommandName()) {
-            case "connect" -> connect(event, deferReplyWrapper);
-            case "disconnect" -> disconnect(event, deferReplyWrapper);
-            case "send" -> send(event, deferReplyWrapper);
+            case "connect" -> connect(event, replyWrapper);
+            case "disconnect" -> disconnect(event, replyWrapper);
+            case "send" -> send(event, replyWrapper);
 
-            case null, default -> deferReplyWrapper.replyError("Invalid command usage");
+            case null, default -> replyWrapper.replyError("Invalid command usage");
         }
     }
 
     private void connect(@NotNull SlashCommandInteractionEvent event,
-                         @NotNull DeferReplyWrapper deferReplyWrapper) {
+                         @NotNull ReplyWrapper replyWrapper) {
         connectedChatRepository.save(new ConnectedChatModel(
                 event.getChannelIdLong(),
                 event.getUser().getIdLong())
         );
 
-        deferReplyWrapper.replyGood("This channel is now connected to TNTClient chat.");
+        replyWrapper.replyGood("This channel is now connected to TNTClient chat.");
     }
 
     private void disconnect(@NotNull SlashCommandInteractionEvent event,
-                            @NotNull DeferReplyWrapper deferReplyWrapper) {
+                            @NotNull ReplyWrapper replyWrapper) {
         long chatID = event.getOption("channel", event.getChannelIdLong(), OptionMapping::getAsLong);
 
         connectedChatRepository.deleteById(chatID);
 
-        deferReplyWrapper.replyGood("Channel is now disconnected from TNTClient chat.");
+        replyWrapper.replyGood("Channel is now disconnected from TNTClient chat.");
     }
 
     private void send(@NotNull SlashCommandInteractionEvent event,
-                      @NotNull DeferReplyWrapper deferReplyWrapper) {
+                      @NotNull ReplyWrapper replyWrapper) {
         String message = event.getOption("message", "", OptionMapping::getAsString);
-        if (message.isBlank()) {
-            deferReplyWrapper.replyError("Message cannot be empty");
-
-            return;
-        }
+        if (message.isBlank()) throw new SendErrorMessageDiscord("Message cannot be empty");
 
         UUID receiver = playerRequesterService.getProfileUuid("receiver", event)
                 .orElse(null);
@@ -140,29 +139,33 @@ public class LiveChatCommand implements SlashCommandEvent {
 
         Collection<SelectOption> options = getPlayerOptions(event.getUser().getIdLong());
 
-        WebhookMessageCreateAction<?> messageCreateAction = deferReplyWrapper.createCustomReply()
+        WebhookMessageCreateAction<?> messageCreateAction = replyWrapper.createCustomReply()
                 .sendMessage("Select the account on whose behalf you want to send the message:");
 
-        selectMenuListener.sendMessageWithOptions(messageCreateAction, options, (selected, replyWrapper) -> {
+        selectMenuListener.sendMessageWithOptions(messageCreateAction, options, (selected, selectReplyWrapper) -> {
             UUID sender = UUID.fromString(selected.getFirst());
+            if (sender.equals(ServerboundChat.EMPTY_USER)) {
+                globalLiveChatService.sendGlobalWarning(event.getUser(), "Send message using unknown account");
+            }
 
             tntClientApi.send(new ServerboundChat(sender, receiver, server, message));
 
-            replyWrapper.replyGood("Message sent successfully");
+            selectReplyWrapper.replyGood("Message sent successfully");
         });
     }
 
     private Collection<SelectOption> getPlayerOptions(long discordID) {
-        Collection<SelectOption> options = new ArrayList<>();
-        options.add(SelectOption.of("Without username", ServerboundChat.EMPTY_USER.toString()));
-
         Collection<ConnectedPlayerModel> connectedPlayerModels =
                 connectedPlayerRepository.findAllByDiscord(discordID, Limit.of(SelectMenu.OPTIONS_MAX_AMOUNT - 1));
 
         Set<UUID> playersUUID = connectedPlayerModels.stream()
                 .map(ConnectedPlayerModel::getPlayer)
                 .collect(Collectors.toSet());
+
         Map<UUID, MojangProfile> profiles = mojangAPI.getProfiles(playersUUID);
+
+        Collection<SelectOption> options = new ArrayList<>(profiles.size() + 1);
+        options.add(SelectOption.of("Without username", ServerboundChat.EMPTY_USER.toString()));
 
         for (UUID playerUUID : playersUUID) {
             MojangProfile profile = profiles.get(playerUUID);

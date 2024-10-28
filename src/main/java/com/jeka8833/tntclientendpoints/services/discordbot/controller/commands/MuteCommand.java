@@ -1,10 +1,10 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.MutedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.MutedPlayerRepository;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.LiveChatService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.GlobalLiveChatService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
@@ -45,11 +45,11 @@ public class MuteCommand implements SlashCommandEvent {
             Pattern.compile("^(\\d+)d$"), TimeUnit.DAYS
     );
 
-    private final PrivilegeChecker privilegeChecker;
     private final MojangApi mojangAPI;
-    private final PlayerRequesterService playerRequesterService;
+    private final PrivilegeChecker privilegeChecker;
     private final MutedPlayerRepository mutedPlayerRepository;
-    private final LiveChatService liveChatService;
+    private final GlobalLiveChatService globalLiveChatService;
+    private final PlayerRequesterService playerRequesterService;
 
     @Override
     public CommandData getCommandData() {
@@ -91,22 +91,22 @@ public class MuteCommand implements SlashCommandEvent {
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event,
-                                          @NotNull DeferReplyWrapper deferReplyWrapper) {
-        if (privilegeChecker.hasNoAccess(event, deferReplyWrapper, "MUTE")) return;
+                                          @NotNull ReplyWrapper replyWrapper) {
+        if (privilegeChecker.hasNoAccess(event, replyWrapper, "MUTE")) return;
 
         switch (event.getSubcommandName()) {
-            case "add" -> add(event, deferReplyWrapper);
-            case "remove" -> remove(event, deferReplyWrapper);
-            case "list" -> list(event, deferReplyWrapper);
+            case "add" -> add(event, replyWrapper);
+            case "remove" -> remove(event, replyWrapper);
+            case "list" -> list(event, replyWrapper);
 
-            case null, default -> deferReplyWrapper.replyError("Invalid command usage");
+            case null, default -> replyWrapper.replyError("Invalid command usage");
         }
     }
 
     private void add(@NotNull SlashCommandInteractionEvent event,
-                     @NotNull DeferReplyWrapper deferReplyWrapper) {
+                     @NotNull ReplyWrapper replyWrapper) {
         Optional<UUID> playerOpt =
-                playerRequesterService.getProfileUuidOrReplay("player", event, deferReplyWrapper);
+                playerRequesterService.getProfileUuidOrReplay("player", event, replyWrapper);
         if (playerOpt.isEmpty()) return;
 
         String descriptionString = event.getOption("description", "", OptionMapping::getAsString);
@@ -114,7 +114,7 @@ public class MuteCommand implements SlashCommandEvent {
 
         Duration duration = parseTime(timeString);
         if (duration == null) {
-            deferReplyWrapper.replyError("Invalid time format.");
+            replyWrapper.replyError("Invalid time format.");
 
             return;
         }
@@ -126,24 +126,26 @@ public class MuteCommand implements SlashCommandEvent {
                 ZonedDateTime.now().plus(duration))
         );
 
-        deferReplyWrapper.replyGood("Player muted");
+        replyWrapper.replyGood("Player muted");
 
-        liveChatService.sendGlobalWarning(event.getUser(), "Muted player: " + playerOpt.get());
+        globalLiveChatService.sendGlobalWarning(event.getUser(), "Muted player: " + playerOpt.get());   // TODO: change
     }
 
     private void remove(@NotNull SlashCommandInteractionEvent event,
-                        @NotNull DeferReplyWrapper deferReplyWrapper) {
+                        @NotNull ReplyWrapper replyWrapper) {
         Optional<UUID> playerOpt =
-                playerRequesterService.getProfileUuidOrReplay("player", event, deferReplyWrapper);
+                playerRequesterService.getProfileUuidOrReplay("player", event, replyWrapper);
         if (playerOpt.isEmpty()) return;
 
         mutedPlayerRepository.deleteById(playerOpt.get());
 
-        deferReplyWrapper.replyGood("Player " + playerOpt.get() + " unmuted");
+        replyWrapper.replyGood("Player " + playerOpt.get() + " unmuted");
+
+        // TODO: add global logging
     }
 
     private void list(@NotNull SlashCommandInteractionEvent event,
-                      @NotNull DeferReplyWrapper deferReplyWrapper) {
+                      @NotNull ReplyWrapper replyWrapper) {
         int pageNumber = event.getOption("page", 1, OptionMapping::getAsInt);
 
         Pageable pageable = PageRequest.of(pageNumber - 1, 10);
@@ -174,7 +176,7 @@ public class MuteCommand implements SlashCommandEvent {
 
         builder.setFooter("Page " + pageNumber + " of " + page.getTotalPages());
 
-        deferReplyWrapper.replyEmbeds(builder.build());
+        replyWrapper.replyEmbeds(builder.build());
     }
 
     @Nullable

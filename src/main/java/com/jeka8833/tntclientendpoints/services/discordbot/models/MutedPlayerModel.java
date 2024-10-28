@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public class MutedPlayerModel {
     private long moderator;
 
     @Column(name = "reason")
-    private String reason;
+    private @Nullable String reason;
 
     @Column(name = "unmute_time")
     private ZonedDateTime unmuteTime;

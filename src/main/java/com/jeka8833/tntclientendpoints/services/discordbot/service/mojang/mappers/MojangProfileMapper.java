@@ -2,6 +2,7 @@ package com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.mappe
 
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.dtos.MojangProfileDto;
+import com.jeka8833.tntclientendpoints.services.general.UuidUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,13 +18,10 @@ public abstract class MojangProfileMapper {
 
     @Named("toUUID")
     static UUID toUUID(String value) {
-        if (value == null) return null;
-
         try {
-            return UUID.fromString(
-                    value.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
-        } catch (Exception e) {
-            log.warn("Failed to parse UUID: {}", value, e);
+            return UuidUtil.parseWithoutDash(value);
+        } catch (Throwable e) {
+            log.warn("Failed to parse uuid: {}", value, e);
         }
 
         return null;

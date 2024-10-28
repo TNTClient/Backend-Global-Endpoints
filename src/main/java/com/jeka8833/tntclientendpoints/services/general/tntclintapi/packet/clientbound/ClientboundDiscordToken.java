@@ -10,11 +10,11 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public final class ClientboundDiscordTocken implements PacketBase {
+public final class ClientboundDiscordToken implements PacketBase {
     private final UUID player;
     private final int code;
 
-    public ClientboundDiscordTocken(PacketInputSerializer serializer) {
+    public ClientboundDiscordToken(PacketInputSerializer serializer) {
         this.player = serializer.readUUID();
         this.code = serializer.readInt();
     }

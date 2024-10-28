@@ -5,19 +5,23 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public record MojangProfile(@Nullable String name, @Nullable UUID uuid) {
-    public boolean isCompleted() {
+    public boolean isFullCompleted() {
         return name != null && uuid != null;
     }
 
+    public boolean isFullAbsent() {
+        return name == null && uuid == null;
+    }
+
     public String getNameAndUuidAsText() {
-        if (name == null && uuid == null) {
+        if (isFullAbsent()) {
             return "Unknown";
-        } else if (name == null) {
-            return uuid.toString();
-        } else if (uuid == null) {
-            return name;
-        } else {
+        } else if (isFullCompleted()) {
             return name + " (" + uuid + ")";
+        } else if (uuid != null) {
+            return uuid.toString();
+        } else {
+            return name;
         }
     }
 

@@ -1,11 +1,11 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 @FunctionalInterface
 public interface SelectMenuEvent {
-    void onSelect(@NotNull List<String> selected, @NotNull DeferReplyWrapper replyWrapper);
+    void onSelect(@NotNull List<String> selected, @NotNull ReplyWrapper replyWrapper);
 }

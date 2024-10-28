@@ -1,6 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.DiscordUserModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.DiscordUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ import java.util.Set;
 public class PrivilegeChecker {
     private final DiscordUserRepository userRepository;
 
-    public boolean hasNoAccess(@NotNull SlashCommandInteractionEvent event, @NotNull DeferReplyWrapper deferReplay,
+    public boolean hasNoAccess(@NotNull SlashCommandInteractionEvent event, @NotNull ReplyWrapper deferReplay,
                                String role) {
         long userID = event.getUser().getIdLong();
 

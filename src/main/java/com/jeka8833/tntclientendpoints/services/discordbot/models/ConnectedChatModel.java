@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "tnd_live_chat_list")
 public class ConnectedChatModel {
     @Id
-    @Column(name = "chatID")
+    @Column(name = "chatid")
     private long chatID;
 
-    @Column(name = "userID")
+    @Column(name = "userid")
     private long userID;
 }
