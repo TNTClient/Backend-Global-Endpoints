@@ -1,9 +1,10 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape;
 
-import com.jeka8833.tntclientendpoints.services.restapi.dtos.PlayerGitConfig;
-import com.jeka8833.tntclientendpoints.services.restapi.dtos.PostCapeDto;
+import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfigDto;
+import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.ChangeFileTask;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.GitService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.git.PlayerConfigService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwResult;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwScannerService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class CapeService {
     private final CapeFilterService capeFilterService;
     private final NsfwScannerService nsfwScannerService;
+    private final PlayerConfigService playerConfigService;
     private final GitService gitService;
 
     private final int maxFileSize;
@@ -29,7 +31,8 @@ public class CapeService {
     private final int maxImageWidth;
     private final int maxImageHeight;
 
-    public CapeService(CapeFilterService capeFilterService, NsfwScannerService nsfwScannerService, GitService gitService,
+    public CapeService(CapeFilterService capeFilterService, NsfwScannerService nsfwScannerService,
+                       GitService gitService, PlayerConfigService playerConfigService,
                        @Value("${tntclient.cape.parse.maxfilesize: 10MB}") DataSize maxFileSize,
                        @Value("${tntclient.cape.parse.allowedimageformats: png,jpeg}") String[] allowedImageFormats,
                        @Value("${tntclient.cape.parse.maximagewidth: #{2048}}") int maxImageWidth,
@@ -37,6 +40,7 @@ public class CapeService {
         this.capeFilterService = capeFilterService;
         this.nsfwScannerService = nsfwScannerService;
         this.gitService = gitService;
+        this.playerConfigService = playerConfigService;
         this.maxFileSize = Math.toIntExact(maxFileSize.toBytes());
         this.allowedImageFormats = allowedImageFormats;
         this.maxImageWidth = maxImageWidth;
@@ -79,13 +83,13 @@ public class CapeService {
         gitService.addTask(
                 new ChangeFileTask(capePath, () -> Files.deleteIfExists(capePath)),
                 new ChangeFileTask(configPath, () -> {
-                    PlayerGitConfig playerGitConfig = PlayerGitConfig.readOrDefault(configPath);
+                    GitPlayerConfigDto playerGitConfig = playerConfigService.readOrDefault(configPath);
 
-                    if (playerGitConfig.getCapePriority() == PlayerGitConfig.TNTCLIENT_CAPE_PRIORITY) {
-                        playerGitConfig.setCapePriority(PlayerGitConfig.OPTIFINE_CAPE_PRIORITY);
+                    if (playerGitConfig.getCapePriority() == GitPlayerConfigDto.TNTCLIENT_CAPE_PRIORITY) {
+                        playerGitConfig.setCapePriority(GitPlayerConfigDto.OPTIFINE_CAPE_PRIORITY);
                     }
 
-                    playerGitConfig.write(configPath);
+                    playerConfigService.write(configPath, playerGitConfig);
                 })
         );
     }
@@ -110,11 +114,11 @@ public class CapeService {
         gitService.addTask(
                 new ChangeFileTask(capePath, () -> Files.write(capePath, finalImageByteArray)),
                 new ChangeFileTask(configPath, () -> {
-                    PlayerGitConfig playerGitConfig = PlayerGitConfig.readOrDefault(configPath);
+                    GitPlayerConfigDto playerGitConfig = playerConfigService.readOrDefault(configPath);
                     playerGitConfig.setCapePriority(visible ?
-                            PlayerGitConfig.TNTCLIENT_CAPE_PRIORITY : PlayerGitConfig.OPTIFINE_CAPE_PRIORITY);
+                            GitPlayerConfigDto.TNTCLIENT_CAPE_PRIORITY : GitPlayerConfigDto.OPTIFINE_CAPE_PRIORITY);
 
-                    playerGitConfig.write(configPath);
+                    playerConfigService.write(configPath, playerGitConfig);
                 })
         );
     }
@@ -132,11 +136,11 @@ public class CapeService {
 
         gitService.addTask(
                 new ChangeFileTask(configPath, () -> {
-                    PlayerGitConfig playerGitConfig = PlayerGitConfig.readOrDefault(configPath);
+                    GitPlayerConfigDto playerGitConfig = playerConfigService.readOrDefault(configPath);
                     playerGitConfig.setCapePriority(visible ?
-                            PlayerGitConfig.TNTCLIENT_CAPE_PRIORITY : PlayerGitConfig.OPTIFINE_CAPE_PRIORITY);
+                            GitPlayerConfigDto.TNTCLIENT_CAPE_PRIORITY : GitPlayerConfigDto.OPTIFINE_CAPE_PRIORITY);
 
-                    playerGitConfig.write(configPath);
+                    playerConfigService.write(configPath, playerGitConfig);
                 })
         );
     }

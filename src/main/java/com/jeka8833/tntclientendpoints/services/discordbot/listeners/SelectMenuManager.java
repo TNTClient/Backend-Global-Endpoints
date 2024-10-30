@@ -1,7 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
+import com.jeka8833.tntclientendpoints.services.discordbot.exceptions.SendErrorMessageDiscord;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Component
-public class SelectMenuListener extends ListenerAdapter {
+public class SelectMenuManager extends ListenerAdapter {
     private final String prefix = String.valueOf(System.currentTimeMillis());
     private final AtomicInteger counter = new AtomicInteger();
 

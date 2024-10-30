@@ -11,15 +11,17 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "TCA_UserPrivileges")
+@Table(name = "tntclient_user_roles_and_keys")
 public class TNTClientUser {
     @Id
-    @Column(name = "id")
-    private UUID id;
+    @Column(name = "user")
+    private UUID user;
 
+    @Nullable
     @Column(name = "roles")
-    private @Nullable String roles;
+    private String roles;
 
-    @Column(name = "staticKey")
-    private @Nullable UUID staticKey;
+    @Nullable
+    @Column(name = "static_key")
+    private UUID staticKey;
 }

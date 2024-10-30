@@ -1,22 +1,22 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.service.ConnectTokenService;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.GlobalLiveChatService;
-import com.jeka8833.tntclientendpoints.services.general.minecraft.ChatColor;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.DiscordTokenManagerService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.GlobalLiveChatService;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.MinecraftServer;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.TNTClientApi;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundChat;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundDiscordToken;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.util.ChatColor;
 import org.springframework.stereotype.Component;
 
 @Component("discord-tntClientApiController")
-public class TNTClientApiController {
+class TNTClientApiController {
 
-    public TNTClientApiController(TNTClientApi tntClientApi, ConnectTokenService connectTokenService,
+    public TNTClientApiController(TNTClientApi tntClientApi, DiscordTokenManagerService discordTokenManagerService,
                                   GlobalLiveChatService globalLiveChatService) {
         tntClientApi.registerListener(ClientboundDiscordToken.class, packet -> {
-            boolean connectStatus = connectTokenService.connect(packet.getPlayer(), packet.getCode());
+            boolean connectStatus = discordTokenManagerService.validateAndConnect(packet.getPlayer(), packet.getCode());
 
             if (connectStatus) {
                 tntClientApi.send(new ServerboundChat(null, packet.getPlayer(), MinecraftServer.GLOBAL,

@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class SecurityUser implements UserDetails {
+    private static final SimpleGrantedAuthority AUTH_BLOCKED = new SimpleGrantedAuthority("AUTH_BLOCKED");
+
     private final UUID username;
 
     private Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -51,7 +53,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !authorities.contains(new SimpleGrantedAuthority("AUTH_BLOCKED"));
+        return !authorities.contains(AUTH_BLOCKED);
     }
 
     @Override

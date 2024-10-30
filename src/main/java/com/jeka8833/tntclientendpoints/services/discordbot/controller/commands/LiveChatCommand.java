@@ -1,16 +1,16 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
-import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SelectMenuListener;
+import com.jeka8833.tntclientendpoints.services.discordbot.exceptions.SendErrorMessageDiscord;
+import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SelectMenuManager;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedPlayerRepository;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.GlobalLiveChatService;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.DiscordPrivilegeCheckerService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.GlobalLiveChatService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.MinecraftServer;
@@ -36,11 +36,11 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class LiveChatCommand implements SlashCommandEvent {
+class LiveChatCommand implements SlashCommandEvent {
     private final MojangApi mojangAPI;
     private final TNTClientApi tntClientApi;
-    private final PrivilegeChecker privilegeChecker;
-    private final SelectMenuListener selectMenuListener;
+    private final DiscordPrivilegeCheckerService discordPrivilegeCheckerService;
+    private final SelectMenuManager selectMenuManager;
     private final GlobalLiveChatService globalLiveChatService;
     private final PlayerRequesterService playerRequesterService;
     private final ConnectedChatRepository connectedChatRepository;
@@ -91,7 +91,7 @@ public class LiveChatCommand implements SlashCommandEvent {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event,
                                           @NotNull ReplyWrapper replyWrapper) {
-        if (privilegeChecker.hasNoAccess(event, replyWrapper, "LIVE_CHAT")) return;
+        discordPrivilegeCheckerService.throwIfNoAccess(event, "LIVE_CHAT");
 
         switch (event.getSubcommandName()) {
             case "connect" -> connect(event, replyWrapper);
@@ -126,14 +126,15 @@ public class LiveChatCommand implements SlashCommandEvent {
         String message = event.getOption("message", "", OptionMapping::getAsString);
         if (message.isBlank()) throw new SendErrorMessageDiscord("Message cannot be empty");
 
-        UUID receiver = playerRequesterService.getProfileUuid("receiver", event)
+        UUID receiver = playerRequesterService.getMojangProfileOptional(event, "receiver")
+                .map(MojangProfile::uuid)
                 .orElse(null);
 
         MinecraftServer server = event.getOption("server", MinecraftServer.GLOBAL, optionMapping -> {
             try {
                 return MinecraftServer.valueOf(optionMapping.getAsString());
             } catch (Exception e) {
-                return MinecraftServer.GLOBAL;
+                throw new SendErrorMessageDiscord("Invalid server name");
             }
         });
 
@@ -142,15 +143,18 @@ public class LiveChatCommand implements SlashCommandEvent {
         WebhookMessageCreateAction<?> messageCreateAction = replyWrapper.createCustomReply()
                 .sendMessage("Select the account on whose behalf you want to send the message:");
 
-        selectMenuListener.sendMessageWithOptions(messageCreateAction, options, (selected, selectReplyWrapper) -> {
+        selectMenuManager.sendMessageWithOptions(messageCreateAction, options, (selected, selectReplyWrapper) -> {
             UUID sender = UUID.fromString(selected.getFirst());
             if (sender.equals(ServerboundChat.EMPTY_USER)) {
                 globalLiveChatService.sendGlobalWarning(event.getUser(), "Send message using unknown account");
             }
 
-            tntClientApi.send(new ServerboundChat(sender, receiver, server, message));
-
-            selectReplyWrapper.replyGood("Message sent successfully");
+            boolean isSent = tntClientApi.send(new ServerboundChat(sender, receiver, server, message));
+            if (isSent) {
+                selectReplyWrapper.replyGood("Message sent successfully");
+            } else {
+                selectReplyWrapper.replyError("No connection to the server");
+            }
         });
     }
 

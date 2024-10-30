@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -18,18 +18,19 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Entity
-@Table(name = "tnd_muted_users")
+@Table(name = "tntclient_muted_player")
 public class MutedPlayerModel {
     @Id
     @Column(name = "player")
     private UUID player;
 
-    @Column(name = "moderator")
+    @Column(name = "discord_moderator_id")
     private long moderator;
 
+    @Nullable
     @Column(name = "reason")
-    private @Nullable String reason;
+    private String reason;
 
     @Column(name = "unmute_time")
-    private ZonedDateTime unmuteTime;
+    private Instant unmuteTime;
 }

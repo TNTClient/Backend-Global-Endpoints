@@ -2,7 +2,7 @@ package com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.mappe
 
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.dtos.MojangProfileDto;
-import com.jeka8833.tntclientendpoints.services.general.UuidUtil;
+import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

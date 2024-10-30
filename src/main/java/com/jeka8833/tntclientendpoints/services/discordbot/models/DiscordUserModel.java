@@ -9,10 +9,10 @@ import lombok.Getter;
 @Getter
 
 @Entity
-@Table(name = "discord_user")
+@Table(name = "discordbot_discord_roles")
 public class DiscordUserModel {
     @Id
-    @Column(name = "user")
+    @Column(name = "discord_id")
     private long discordID;
 
     @Column(name = "roles")

@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JDAListeners {
+class JDAListeners {
     public JDAListeners(ListenerAdapter[] listenerAdapters, JDA jda) {
         jda.addEventListener((Object[]) listenerAdapters);
     }

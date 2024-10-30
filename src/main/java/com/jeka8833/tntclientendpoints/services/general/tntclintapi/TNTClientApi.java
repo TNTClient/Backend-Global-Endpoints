@@ -37,12 +37,12 @@ public class TNTClientApi {
                         build.clientbound(ClientboundChat.class, ClientboundChat::new);
                         build.serverbound(ServerboundChat.class, ServerboundChat::new);
                     })
-                    .register((byte) 00, build -> { // TODO: Add packet
-                        build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new);
-                    })
                     .register((byte) 253, build -> {
                         build.clientbound(ClientboundWebToken.class, ClientboundWebToken::new);
                         build.serverbound(ServerboundWebToken.class, ServerboundWebToken::new);
+                    })
+                    .register((byte) 254, build -> {
+                        build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new);
                     })
                     .register((byte) 255, build -> {
                         build.clientbound(ClientboundAuth.class, ClientboundAuth::new);
@@ -71,7 +71,7 @@ public class TNTClientApi {
         public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
             super.onOpen(webSocket, response);
 
-            state = State.AUTHORISING;
+            if (state != State.CLOSED) state = State.AUTHORISING;
 
             if (authorisingFuture != null) authorisingFuture.cancel(true);
 
@@ -107,7 +107,7 @@ public class TNTClientApi {
         public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable Response response) {
             super.onFailure(webSocket, t, response);
 
-            state = State.RECONNECTING;
+            if (state != State.CLOSED) state = State.RECONNECTING;
 
             LOGGER.error("Exception in WebSocket", t);
 
@@ -118,7 +118,7 @@ public class TNTClientApi {
         public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
             super.onClosed(webSocket, code, reason);
 
-            state = State.RECONNECTING;
+            if (state != State.CLOSED) state = State.RECONNECTING;
 
             LOGGER.info("Server close WebSocket with code {}: {}", code, reason);
 
@@ -138,7 +138,7 @@ public class TNTClientApi {
         registerListener(ClientboundAuth.class, packet -> {
             if (authorisingFuture != null) authorisingFuture.cancel(true);
 
-            state = State.CONNECTED;
+            if (state != State.CLOSED) state = State.CONNECTED;
 
             LOGGER.info("TNTClient API Connected!");
         });
@@ -218,6 +218,7 @@ public class TNTClientApi {
 
     private synchronized void doReconnect() {
         LOGGER.info("TNTClient API Reconnecting... Status: {}", state);
+
         if (state == State.RECONNECTING || state == State.AUTHORISING || state == State.CONNECTING) {
             if (reconnectingFuture != null) reconnectingFuture.cancel(true);
             if (authorisingFuture != null) authorisingFuture.cancel(true);

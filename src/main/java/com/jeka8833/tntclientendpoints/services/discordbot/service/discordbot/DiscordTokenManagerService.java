@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.service;
+package com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedPlayerRepository;
@@ -12,13 +12,13 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class ConnectTokenService {
+public class DiscordTokenManagerService {
     private static final Random RANDOM = new SecureRandom();
 
     private final Cache<Integer, Long> cache;
     private final ConnectedPlayerRepository connectedPlayerRepository;
 
-    public ConnectTokenService(ConnectedPlayerRepository connectedPlayerRepository) {
+    public DiscordTokenManagerService(ConnectedPlayerRepository connectedPlayerRepository) {
         this.connectedPlayerRepository = connectedPlayerRepository;
 
         cache = new Cache2kBuilder<Integer, Long>() {
@@ -36,7 +36,7 @@ public class ConnectTokenService {
         return token;
     }
 
-    public boolean connect(UUID player, int token) {
+    public boolean validateAndConnect(UUID player, int token) {
         Long discordID = cache.peekAndRemove(token);
         if (discordID == null) return false;
 

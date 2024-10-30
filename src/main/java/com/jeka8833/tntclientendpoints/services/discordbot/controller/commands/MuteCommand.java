@@ -1,12 +1,13 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.exceptions.SendErrorMessageDiscord;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
 import com.jeka8833.tntclientendpoints.services.discordbot.models.MutedPlayerModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.MutedPlayerRepository;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.GlobalLiveChatService;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PlayerRequesterService;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.commands.PrivilegeChecker;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.DiscordPrivilegeCheckerService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.GlobalLiveChatService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +29,18 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.time.Duration;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class MuteCommand implements SlashCommandEvent {
+class MuteCommand implements SlashCommandEvent {
     private static final Map<Pattern, TimeUnit> regexToTimeUnit = Map.of(
             Pattern.compile("^(\\d+)s$"), TimeUnit.SECONDS,
             Pattern.compile("^(\\d+)m$"), TimeUnit.MINUTES,
@@ -46,10 +49,10 @@ public class MuteCommand implements SlashCommandEvent {
     );
 
     private final MojangApi mojangAPI;
-    private final PrivilegeChecker privilegeChecker;
     private final MutedPlayerRepository mutedPlayerRepository;
     private final GlobalLiveChatService globalLiveChatService;
     private final PlayerRequesterService playerRequesterService;
+    private final DiscordPrivilegeCheckerService discordPrivilegeCheckerService;
 
     @Override
     public CommandData getCommandData() {
@@ -92,7 +95,7 @@ public class MuteCommand implements SlashCommandEvent {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event,
                                           @NotNull ReplyWrapper replyWrapper) {
-        if (privilegeChecker.hasNoAccess(event, replyWrapper, "MUTE")) return;
+        discordPrivilegeCheckerService.throwIfNoAccess(event, "MUTE");
 
         switch (event.getSubcommandName()) {
             case "add" -> add(event, replyWrapper);
@@ -105,43 +108,41 @@ public class MuteCommand implements SlashCommandEvent {
 
     private void add(@NotNull SlashCommandInteractionEvent event,
                      @NotNull ReplyWrapper replyWrapper) {
-        Optional<UUID> playerOpt =
-                playerRequesterService.getProfileUuidOrReplay("player", event, replyWrapper);
-        if (playerOpt.isEmpty()) return;
+        MojangProfile mojangProfile = playerRequesterService.getMojangProfileOrThrow(event, "player");
+
+        String timeString = event.getOption("time", "", OptionMapping::getAsString);
+        Duration duration = parseTime(timeString);
+        if (duration == null) throw new SendErrorMessageDiscord("Invalid time format.");
 
         String descriptionString = event.getOption("description", "", OptionMapping::getAsString);
-        String timeString = event.getOption("time", "", OptionMapping::getAsString);
 
-        Duration duration = parseTime(timeString);
-        if (duration == null) {
-            replyWrapper.replyError("Invalid time format.");
-
-            return;
-        }
+        Instant muteEnd = Instant.now().plus(duration);
 
         mutedPlayerRepository.save(new MutedPlayerModel(
-                playerOpt.get(),
+                mojangProfile.uuid(),
                 event.getUser().getIdLong(),
                 descriptionString,
-                ZonedDateTime.now().plus(duration))
+                muteEnd)
         );
 
         replyWrapper.replyGood("Player muted");
 
-        globalLiveChatService.sendGlobalWarning(event.getUser(), "Muted player: " + playerOpt.get());   // TODO: change
+        globalLiveChatService.sendGlobalWarning(event.getUser(), "Player " +
+                mojangProfile.getNameAndUuidAsText() + " muted until " + muteEnd +
+                " for the reason: " + descriptionString);
     }
 
     private void remove(@NotNull SlashCommandInteractionEvent event,
                         @NotNull ReplyWrapper replyWrapper) {
-        Optional<UUID> playerOpt =
-                playerRequesterService.getProfileUuidOrReplay("player", event, replyWrapper);
-        if (playerOpt.isEmpty()) return;
+        MojangProfile mojangProfile = playerRequesterService.getMojangProfileOrThrow(event, "player");
 
-        mutedPlayerRepository.deleteById(playerOpt.get());
+        //noinspection DataFlowIssue
+        mutedPlayerRepository.deleteById(mojangProfile.uuid());
 
-        replyWrapper.replyGood("Player " + playerOpt.get() + " unmuted");
+        replyWrapper.replyGood("Player unmuted");
 
-        // TODO: add global logging
+        globalLiveChatService.sendGlobalWarning(event.getUser(),
+                "Player " + mojangProfile.getNameAndUuidAsText() + " has been unmuted.");
     }
 
     private void list(@NotNull SlashCommandInteractionEvent event,

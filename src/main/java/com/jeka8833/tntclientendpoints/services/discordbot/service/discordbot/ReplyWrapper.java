@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot;
+package com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -10,7 +10,7 @@ import java.awt.*;
 
 public class ReplyWrapper implements AutoCloseable {
     private final InteractionHook hook;
-    private boolean isReplied = false;
+    private boolean isReplied;
 
     public ReplyWrapper(IDeferrableCallback event) {
         this.hook = event.getHook().setEphemeral(true);

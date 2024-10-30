@@ -1,8 +1,8 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.controller.commands;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
 import com.jeka8833.tntclientendpoints.services.discordbot.listeners.SlashCommandEvent;
-import com.jeka8833.tntclientendpoints.services.discordbot.service.ConnectTokenService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.DiscordTokenManagerService;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AccountCommand implements SlashCommandEvent {
-    private final ConnectTokenService connectTokenService;
+class AccountCommand implements SlashCommandEvent {
+    private final DiscordTokenManagerService discordTokenManagerService;
 
     @Override
     public CommandData getCommandData() {
@@ -41,7 +41,7 @@ public class AccountCommand implements SlashCommandEvent {
     private void add(@NotNull SlashCommandInteractionEvent event,
                      @NotNull ReplyWrapper replyWrapper) {
         long discordID = event.getUser().getIdLong();
-        int token = connectTokenService.generateToken(discordID);
+        int token = discordTokenManagerService.generateToken(discordID);
 
         replyWrapper.replyGood("Write the command \"@discordlink " + token +
                 "\" into the game chat using TNTClient. You have 1 minute to do this," +
@@ -52,7 +52,7 @@ public class AccountCommand implements SlashCommandEvent {
                         @NotNull ReplyWrapper replyWrapper) {
         long discordID = event.getUser().getIdLong();
 
-        connectTokenService.disconnect(discordID);
+        discordTokenManagerService.disconnect(discordID);
 
         replyWrapper.replyGood(
                 "All your Minecraft accounts have been unlinked from your Discord account.");

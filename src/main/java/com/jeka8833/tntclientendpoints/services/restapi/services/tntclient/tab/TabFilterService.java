@@ -1,6 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab;
 
-import com.jeka8833.tntclientendpoints.services.general.minecraft.ChatColor;
+import com.jeka8833.tntclientendpoints.services.general.util.ChatColor;
 import org.springframework.stereotype.Service;
 
 import java.util.regex.Pattern;

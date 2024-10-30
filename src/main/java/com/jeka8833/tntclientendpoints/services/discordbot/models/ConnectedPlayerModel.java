@@ -16,12 +16,12 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Entity
-@Table(name = "tnd_players")
+@Table(name = "discordbot_discord_minecraft_user_connection")
 public class ConnectedPlayerModel {
     @Id
     @Column(name = "discord")
     private long discord;
 
-    @Column(name = "player")
+    @Column(name = "minecraft")
     private UUID player;
 }

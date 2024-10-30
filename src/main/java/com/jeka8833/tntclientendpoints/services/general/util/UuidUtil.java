@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.general;
+package com.jeka8833.tntclientendpoints.services.general.util;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

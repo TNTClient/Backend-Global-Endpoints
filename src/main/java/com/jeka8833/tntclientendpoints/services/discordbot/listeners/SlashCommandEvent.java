@@ -1,6 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.ReplyWrapper;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import org.jetbrains.annotations.NotNull;

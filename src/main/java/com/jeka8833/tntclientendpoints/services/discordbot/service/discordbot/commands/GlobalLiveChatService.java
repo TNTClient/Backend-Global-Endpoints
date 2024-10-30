@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.service.commands;
+package com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatModel;
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;

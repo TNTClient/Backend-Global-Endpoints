@@ -1,7 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
-import com.jeka8833.tntclientendpoints.services.discordbot.DeferReplyWrapper;
-import com.jeka8833.tntclientendpoints.services.discordbot.SendErrorMessageDiscord;
+import com.jeka8833.tntclientendpoints.services.discordbot.exceptions.SendErrorMessageDiscord;
+import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.DeferReplyWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class SlashCommandListener extends ListenerAdapter {
+class SlashCommandListener extends ListenerAdapter {
     private final Map<String, SlashCommandEvent> slashCommands;
 
     public SlashCommandListener(Collection<SlashCommandEvent> slashCommands, JDA jda) {

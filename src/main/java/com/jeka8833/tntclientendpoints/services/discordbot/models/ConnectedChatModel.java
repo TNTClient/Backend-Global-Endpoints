@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 @Entity
-@Table(name = "tnd_live_chat_list")
+@Table(name = "discordbot_live_chat_connection")
 public class ConnectedChatModel {
     @Id
-    @Column(name = "chatid")
+    @Column(name = "chat_id")
     private long chatID;
 
-    @Column(name = "userid")
+    @Column(name = "user_id")
     private long userID;
 }
