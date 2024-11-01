@@ -4,7 +4,7 @@ import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfig
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.ChangeFileTask;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.GitService;
-import com.jeka8833.tntclientendpoints.services.restapi.services.git.PlayerConfigService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.PlayerConfigService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwResult;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwScannerService;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.restapi.services.git;
+package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfigDto;

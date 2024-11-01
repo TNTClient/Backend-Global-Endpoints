@@ -11,6 +11,7 @@ import io.github.bucket4j.Bucket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.time.Duration;
 
 @Slf4j
 @Service
+@ConditionalOnProperty(value = "tntclient.nsfw.scanner", havingValue = "google", matchIfMissing = true)
 public class GoogleNsfwScannerImpl implements NsfwScannerService {
     private final CloudVisionTemplate cloudVisionService;
     private final Bucket bucket;

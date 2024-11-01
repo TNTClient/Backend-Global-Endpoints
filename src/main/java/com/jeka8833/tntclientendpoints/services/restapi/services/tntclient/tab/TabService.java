@@ -5,7 +5,7 @@ import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfig
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostTabDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.ChangeFileTask;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.GitService;
-import com.jeka8833.tntclientendpoints.services.restapi.services.git.PlayerConfigService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.PlayerConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

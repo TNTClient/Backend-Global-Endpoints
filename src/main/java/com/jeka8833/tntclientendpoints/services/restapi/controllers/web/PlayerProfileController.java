@@ -8,11 +8,13 @@ import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.T
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -25,7 +27,12 @@ final class PlayerProfileController {
     private final ProfileService profileService;
 
     @PutMapping("api/v1/player/profile/cape")
-    private void updateCape(@RequestBody @Valid PostCapeDto capeDto, Authentication authentication) {
+    private void updateCape(@RequestBody PostCapeDto capeDto, Authentication authentication) {
+        // Manual validation because broken optional support
+        if (capeDto.data().isPresent() && capeDto.data().get().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Cape data cannot be empty");
+        }
+
         UUID player = userService.getUserOrThrow(authentication);
 
         capeService.updateCape(player, capeDto);

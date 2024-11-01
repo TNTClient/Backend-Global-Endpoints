@@ -1,7 +1,8 @@
-package com.jeka8833.tntclientendpoints.services.restapi.services.git;
+package com.jeka8833.tntclientendpoints.services.restapi.services.git.implementation.remote;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 

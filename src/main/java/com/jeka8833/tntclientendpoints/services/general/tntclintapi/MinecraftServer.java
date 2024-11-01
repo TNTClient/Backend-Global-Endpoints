@@ -17,7 +17,7 @@ public enum MinecraftServer {
 
     public static MinecraftServer fromTntApiName(@Nullable String name) {
         for (MinecraftServer server : MinecraftServer.values()) {
-            if (server.getReadableName().equalsIgnoreCase(name)) {
+            if (server.getTntApiName().equalsIgnoreCase(name)) {
                 return server;
             }
         }

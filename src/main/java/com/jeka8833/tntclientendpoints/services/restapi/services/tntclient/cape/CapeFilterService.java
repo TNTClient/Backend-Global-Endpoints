@@ -72,19 +72,24 @@ public class CapeFilterService {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
 
-        int scale = CapeFilterService.getScale(width, height);
+        int newWidth = 64;
+        int newHeight = 32;
+        while (width > newWidth || height > newHeight) {
+            newWidth *= 2;
+            newHeight *= 2;
+        }
 
-        width = Math.min(width, 22 * scale);
-        height = Math.min(height, 17 * scale);
+        width = Math.min(width, 22 * (newWidth / 64));
+        height = Math.min(height, 17 * (newHeight / 32));
 
         var newBufferedImage = new BufferedImage(width, height, 2);
         boolean hasAlpha = false;
 
         for (int y = 0; y < height; y++) {
-            boolean yZone = y < scale;
+            boolean yZone = y < newHeight / 32;
 
             for (int x = 0; x < width; x++) {
-                int toMinX = x / scale;
+                int toMinX = x / (newWidth / 64);
                 if (yZone && (toMinX == 0 || toMinX == 21)) continue;
 
                 int pixel = bufferedImage.getRGB(x, y);
@@ -110,12 +115,6 @@ public class CapeFilterService {
             throw new IllegalArgumentException("Image size exceeded limit of " + limitFileSizeInBytes + " bytes");
         }
         return data.substring(start);
-    }
-
-    private static int getScale(int width, int height) {
-        if (width <= 0 || height <= 0) throw new IllegalArgumentException("Invalid width or height");
-
-        return Math.max(Math.ceilDiv(width, 64), Math.ceilDiv(height, 32));
     }
 
     private static byte[] getImageAsByteArray(BufferedImage image, boolean hasAlpha) throws IOException {
