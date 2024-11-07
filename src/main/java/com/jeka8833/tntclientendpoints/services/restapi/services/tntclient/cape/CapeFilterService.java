@@ -82,7 +82,7 @@ public class CapeFilterService {
         width = Math.min(width, 22 * (newWidth / 64));
         height = Math.min(height, 17 * (newHeight / 32));
 
-        var newBufferedImage = new BufferedImage(width, height, 2);
+        var newBufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         boolean hasAlpha = false;
 
         for (int y = 0; y < height; y++) {
@@ -102,6 +102,7 @@ public class CapeFilterService {
                 newBufferedImage.setRGB(x, y, pixel);
             }
         }
+
         return getImageAsByteArray(newBufferedImage, hasAlpha);
     }
 

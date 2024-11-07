@@ -4,9 +4,9 @@ import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfig
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.ChangeFileTask;
 import com.jeka8833.tntclientendpoints.services.restapi.services.git.GitService;
-import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.PlayerConfigService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwResult;
 import com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwScannerService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.PlayerConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -59,13 +59,7 @@ public class CapeService {
             if (capeDto.data().isEmpty()) {
                 changeOnlyVisibility(player, capeDto.enabled());
             } else {
-                try {
-                    changeCapeAndVisibility(player, capeDto.data().get(), capeDto.enabled());
-                } catch (Exception e) {
-                    changeOnlyVisibility(player, capeDto.enabled());
-
-                    throw e;
-                }
+                changeCapeAndVisibility(player, capeDto.data().get(), capeDto.enabled());
             }
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, e.getMessage());

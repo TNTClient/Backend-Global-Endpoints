@@ -1,8 +1,10 @@
 package com.jeka8833.tntclientendpoints.services.restapi.controllers.web;
 
+import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostAccessoriesDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostTabDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.ProfileService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories.AccessoriesService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape.CapeService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.TabService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.UserService;
@@ -25,6 +27,7 @@ final class PlayerProfileController {
     private final CapeService capeService;
     private final TabService tabService;
     private final ProfileService profileService;
+    private final AccessoriesService accessoriesService;
 
     @PutMapping("api/v1/player/profile/cape")
     private void updateCape(@RequestBody PostCapeDto capeDto, Authentication authentication) {
@@ -57,6 +60,21 @@ final class PlayerProfileController {
         UUID player = userService.getUserOrThrow(authentication);
 
         tabService.removeTab(player);
+    }
+
+    @PutMapping("api/v1/player/profile/accessories")
+    private void updateAccessories(@RequestBody @Valid PostAccessoriesDto accessoriesDto,
+                                   Authentication authentication) {
+        UUID player = userService.getUserOrThrow(authentication);
+
+        accessoriesService.updateAccessories(player, accessoriesDto);
+    }
+
+    @DeleteMapping("api/v1/player/profile/accessories")
+    private void removeAccessories(Authentication authentication) {
+        UUID player = userService.getUserOrThrow(authentication);
+
+        accessoriesService.removeAccessories(player);
     }
 
     @DeleteMapping("api/v1/player/profile")

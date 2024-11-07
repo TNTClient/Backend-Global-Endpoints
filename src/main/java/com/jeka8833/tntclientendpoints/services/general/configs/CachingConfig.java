@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.discordbot.configs;
+package com.jeka8833.tntclientendpoints.services.general.configs;
 
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.springframework.cache.CacheManager;
@@ -20,6 +20,9 @@ public class CachingConfig {
 
                 .addCache(cache ->
                         cache.name("mojang").entryCapacity(2_000).expireAfterWrite(1, TimeUnit.DAYS)
+                                .permitNullValues(false))
+                .addCache(cache ->
+                        cache.name("googleNsfwCache").expireAfterWrite(1, TimeUnit.DAYS)
                                 .permitNullValues(false));
     }
 }

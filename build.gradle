@@ -1,3 +1,4 @@
+// https://start.spring.io/
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.6-SNAPSHOT'
@@ -59,7 +60,7 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
 
     // https://mvnrepository.com/artifact/net.dv8tion/JDA
-    implementation (group: 'net.dv8tion', name: 'JDA', version: '5.1.2') {
+    implementation(group: 'net.dv8tion', name: 'JDA', version: '5.2.0') {
         exclude module: 'opus-java'
     }
 

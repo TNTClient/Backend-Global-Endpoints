@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("/api/v1/player/profile/cape").hasAuthority("CAPE")
                         .requestMatchers("/api/v1/player/profile/tab").hasAuthority("HEART")
+                        .requestMatchers("api/v1/player/profile/accessories").hasAuthority("ACCESSORIES")
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")

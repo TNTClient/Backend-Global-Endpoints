@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,13 @@ public class GoogleNsfwScannerImpl implements NsfwScannerService {
                                  @Value(value = "${spring.cloud.gcp.vision.limitperday}") int limitPerDay) {
         this.cloudVisionService = cloudVisionService;
         this.bucket = Bucket.builder()
-                .addLimit(limit -> limit.capacity(limitPerDay).refillIntervally(limitPerDay, Duration.ofDays(1L)))
+                .addLimit(limit -> limit.capacity(limitPerDay).refillGreedy(limitPerDay, Duration.ofDays(1L)))
                 .build();
     }
 
     @Override
+    @Cacheable(value = "googleNsfwCache", keyGenerator = "googleCacheKeyGenerator",
+            unless = "#result == T(com.jeka8833.tntclientendpoints.services.restapi.services.nsfwChecker.NsfwResult).UNKNOWN")
     public NsfwResult scan(byte[] imageFileInBytes) {
         try {
             if (!bucket.tryConsume(1L)) {
@@ -41,6 +44,8 @@ public class GoogleNsfwScannerImpl implements NsfwScannerService {
 
                 return NsfwResult.UNKNOWN;
             }
+
+            log.info("NSFW scanner free calls: {}", bucket.getAvailableTokens());
 
             var byteArrayResource = new ByteArrayResource(imageFileInBytes);
             AnnotateImageResponse response =
