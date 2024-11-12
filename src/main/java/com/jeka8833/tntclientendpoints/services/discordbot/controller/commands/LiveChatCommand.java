@@ -16,6 +16,7 @@ import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.Mo
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.MinecraftServer;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.TNTClientApi;
 import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -144,12 +145,13 @@ class LiveChatCommand implements SlashCommandEvent {
                 .sendMessage("Select the account on whose behalf you want to send the message:");
 
         selectMenuManager.sendMessageWithOptions(messageCreateAction, options, (selected, selectReplyWrapper) -> {
-            UUID sender = UUID.fromString(selected.getFirst());
-            if (sender.equals(ServerboundChat.EMPTY_USER)) {
+            UUID sender = UuidUtil.parseOrNull(selected.getFirst());
+            if (sender == null) {
                 globalLiveChatService.sendGlobalWarning(event.getUser(), "Send message using unknown account");
             }
 
-            boolean isSent = tntClientApi.send(new ServerboundChat(sender, receiver, server, message));
+            boolean isSent = tntClientApi.send(
+                    new ServerboundChat(sender, receiver, server, message, false));
             if (isSent) {
                 selectReplyWrapper.replyGood("Message sent successfully");
             } else {
@@ -169,7 +171,7 @@ class LiveChatCommand implements SlashCommandEvent {
         Map<UUID, MojangProfile> profiles = mojangAPI.getProfiles(playersUUID);
 
         Collection<SelectOption> options = new ArrayList<>(profiles.size() + 1);
-        options.add(SelectOption.of("Without username", ServerboundChat.EMPTY_USER.toString()));
+        options.add(SelectOption.of("Without username", "Anonymous"));
 
         for (UUID playerUUID : playersUUID) {
             MojangProfile profile = profiles.get(playerUUID);

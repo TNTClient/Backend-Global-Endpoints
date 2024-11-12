@@ -36,7 +36,7 @@ public class PlayerRequesterService {
                 mojangAPI.getProfile(uuidOrName) :
                 mojangAPI.getProfile(UuidUtil.parseOrNull(uuidOrName));
 
-        if (MojangApi.isPlayerUUID(profile.uuid())) {
+        if (!MojangApi.isPlayerUUID(profile.uuid())) {
             throw new SendErrorMessageDiscord("Player " + uuidOrName + " not found.");
         }
 

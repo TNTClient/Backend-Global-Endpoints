@@ -150,8 +150,7 @@ class MuteCommand implements SlashCommandEvent {
         int pageNumber = event.getOption("page", 1, OptionMapping::getAsInt);
 
         Pageable pageable = PageRequest.of(pageNumber - 1, 10);
-        Page<MutedPlayerModel> page = mutedPlayerRepository.findAll(pageable);
-
+        Page<MutedPlayerModel> page = mutedPlayerRepository.findMuted(pageable);
 
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("Muted Player list ")

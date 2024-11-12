@@ -21,10 +21,11 @@ class TNTClientApiController {
             if (connectStatus) {
                 tntClientApi.send(new ServerboundChat(null, packet.getPlayer(), MinecraftServer.GLOBAL,
                         ChatColor.GREEN + "Your discord account was linked to your TNTClient. If " +
-                                "it was not you, write the command \"@discordlink remove\"."));
+                                "it was not you, write the command \"@discordlink remove\".", true));
             } else {
                 tntClientApi.send(new ServerboundChat(null, packet.getPlayer(), MinecraftServer.GLOBAL,
-                        ChatColor.RED + "Incorrect code or you did not have time to enter it."));
+                        ChatColor.RED + "Incorrect code or you did not have time to enter it.",
+                        true));
             }
         });
 

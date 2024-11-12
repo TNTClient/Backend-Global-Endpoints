@@ -48,6 +48,8 @@ public class TempSecurityTokenService {
         if (user == null) return;
 
         SecurityUser securityUser = tempUsers.remove(user);
+        if (securityUser == null) return;
+
         securityUser.expireNow();
 
         List<SessionInformation> sessions = sessionRegistry.getAllSessions(securityUser, true);
