@@ -90,6 +90,8 @@ public class GitServiceImpl implements GitService {
                         gitBackupService.tryBackup();
                     }
                 } catch (Exception e) {
+                    log.warn("Fail to push files, try redownload repository", e);
+
                     try {
                         git = cloneRepository(gitFolder, repositoryUrl);
 

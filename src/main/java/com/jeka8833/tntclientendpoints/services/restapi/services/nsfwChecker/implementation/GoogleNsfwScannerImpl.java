@@ -63,7 +63,7 @@ public class GoogleNsfwScannerImpl implements NsfwScannerService {
 
             if (safeSearchAnnotation.getAdultValue() >= Likelihood.POSSIBLE_VALUE) return NsfwResult.UNSAFE;
             if (safeSearchAnnotation.getViolenceValue() >= Likelihood.LIKELY_VALUE) return NsfwResult.UNSAFE;
-            if (safeSearchAnnotation.getRacyValue() >= Likelihood.VERY_LIKELY_VALUE) return NsfwResult.UNSAFE;
+            if (safeSearchAnnotation.getRacyValue() >= Likelihood.LIKELY_VALUE) return NsfwResult.UNSAFE;
 
             return NsfwResult.SAFE;
         } catch (Exception e) {

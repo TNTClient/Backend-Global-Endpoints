@@ -2,7 +2,6 @@ package com.jeka8833.tntclientendpoints.services.restapi.services.web.security;
 
 import com.jeka8833.tntclientendpoints.services.restapi.models.SecurityUser;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpEntity;
@@ -18,7 +17,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TempSecurityTokenService {
@@ -69,8 +67,7 @@ public class TempSecurityTokenService {
 
             RestTemplate rt = new RestTemplate();
             rt.exchange("http://localhost:8080", HttpMethod.GET, requestEntity, String.class);
-        } catch (Exception ex) {
-            log.warn("Failed to kill expired session", ex);
+        } catch (Exception ignored) {
         }
     }
 }

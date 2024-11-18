@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -64,7 +64,7 @@ public class GlobalLiveChatService {
             long chatID = connectedChatModel.getChatID();
 
             try {
-                TextChannel channel = jda.getTextChannelById(chatID);
+                PrivateChannel channel = jda.getPrivateChannelById(chatID);
                 if (channel == null) {
                     connectedChatRepository.deleteById(chatID);
 
