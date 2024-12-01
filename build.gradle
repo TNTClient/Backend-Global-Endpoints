@@ -1,18 +1,18 @@
 // https://start.spring.io/
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.6-SNAPSHOT'
+    id 'org.springframework.boot' version '3.3.7-SNAPSHOT'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'org.hibernate.orm' version '6.5.3.Final'
     id 'org.graalvm.buildtools.native' version '0.10.3'
 }
 
 group = 'com.jeka8833'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(22)
     }
 }
 
@@ -28,7 +28,7 @@ repositories {
 }
 
 ext {
-    set('springCloudGcpVersion', "5.7.0")
+    set('springCloudGcpVersion', "5.8.0")
     set('springCloudVersion', "2023.0.3")
 }
 

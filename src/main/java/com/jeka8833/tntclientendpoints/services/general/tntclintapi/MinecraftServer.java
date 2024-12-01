@@ -2,6 +2,7 @@ package com.jeka8833.tntclientendpoints.services.general.tntclintapi;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
@@ -12,11 +13,14 @@ public enum MinecraftServer {
     GLOBAL("Global", "Unknown"),
     ;
 
+    public static final MinecraftServer[] VALUES = values();
+
     private final String readableName;
     private final String tntApiName;
 
+    @NotNull
     public static MinecraftServer fromTntApiName(@Nullable String name) {
-        for (MinecraftServer server : MinecraftServer.values()) {
+        for (MinecraftServer server : VALUES) {
             if (server.getTntApiName().equalsIgnoreCase(name)) {
                 return server;
             }

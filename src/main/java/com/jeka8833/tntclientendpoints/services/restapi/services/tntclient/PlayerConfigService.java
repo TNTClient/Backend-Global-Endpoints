@@ -17,8 +17,14 @@ public class PlayerConfigService {
     private final ObjectMapper objectMapper;
 
     public void write(Path path, GitPlayerConfigDto config) throws IOException {
-        try (OutputStream outputStream = Files.newOutputStream(path)) {
-            objectMapper.writeValue(outputStream, config);
+        if (config.getCapePriority() == GitPlayerConfigDto.TNTCLIENT_CAPE_PRIORITY ||
+                config.getAnimationConfig() != null ||
+                !config.getAccessories().isEmpty()) {
+            try (OutputStream outputStream = Files.newOutputStream(path)) {
+                objectMapper.writeValue(outputStream, config);
+            }
+        } else {
+            Files.deleteIfExists(path);
         }
     }
 

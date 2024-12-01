@@ -24,22 +24,15 @@ public class AccessoriesService {
     private final PlayerConfigService playerConfigService;
 
     public void updateAccessories(UUID player, PostAccessoriesDto accessoriesDto) {
-        Map<String, AccessoryParameterDto> accessories = new HashMap<>();
+        Map<String, AccessoryParameterDto> accessories = new HashMap<>(accessoriesDto.accessories().length);
 
-        try {
-            for (String accessory : accessoriesDto.accessories()) {
-                AccessoryParameterDto parameterDto = accessoriesManager.getAccessory(accessory);
-                if (parameterDto == null) {
-                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
-                            "Invalid accessory: " + accessory);
-                }
-
-                accessories.put(accessory, parameterDto);
+        for (String accessory : accessoriesDto.accessories()) {
+            AccessoryParameterDto parameterDto = accessoriesManager.getAccessory(accessory);
+            if (parameterDto == null) {
+                throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Invalid accessory: " + accessory);
             }
-        } catch (ResponseStatusException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+
+            accessories.put(accessory, parameterDto);
         }
 
         Path configPath = gitService.getGitFolder().resolve("player/config/" + player + ".json");

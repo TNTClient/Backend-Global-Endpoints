@@ -5,6 +5,7 @@ import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostCapeDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostTabDto;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.ProfileService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories.AccessoriesService;
+import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories.AccessoryPermissionService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.cape.CapeService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.tab.TabService;
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.UserService;
@@ -28,6 +29,7 @@ final class PlayerProfileController {
     private final TabService tabService;
     private final ProfileService profileService;
     private final AccessoriesService accessoriesService;
+    private final AccessoryPermissionService accessoryPermissionService;
 
     @PutMapping("api/v1/player/profile/cape")
     private void updateCape(@RequestBody PostCapeDto capeDto, Authentication authentication) {
@@ -65,6 +67,10 @@ final class PlayerProfileController {
     @PutMapping("api/v1/player/profile/accessories")
     private void updateAccessories(@RequestBody @Valid PostAccessoriesDto accessoriesDto,
                                    Authentication authentication) {
+        if (!accessoryPermissionService.hasPermission(accessoriesDto, authentication)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have permission to update accessories");
+        }
+
         UUID player = userService.getUserOrThrow(authentication);
 
         accessoriesService.updateAccessories(player, accessoriesDto);

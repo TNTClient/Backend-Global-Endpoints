@@ -17,7 +17,7 @@ public class GitPlayerConfigDto {
     public static final int OPTIFINE_CAPE_PRIORITY = 1;
     public static final int TNTCLIENT_CAPE_PRIORITY = 2;
 
-    private int capePriority;
+    private int capePriority = OPTIFINE_CAPE_PRIORITY;
 
     @Nullable
     private GitAnimationConfigDto animationConfig;
