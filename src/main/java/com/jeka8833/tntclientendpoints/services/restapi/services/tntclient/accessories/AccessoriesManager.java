@@ -3,7 +3,6 @@ package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.acce
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.AccessoryParameterDto;
-import lombok.Locked;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

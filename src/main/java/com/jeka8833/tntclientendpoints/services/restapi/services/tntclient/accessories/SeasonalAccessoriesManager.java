@@ -2,6 +2,7 @@ package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.acce
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
+import com.jeka8833.tntclientendpoints.services.restapi.dtos.AccessoryParameterDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.SeasonalAccessoryDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.git.GitPlayerConfigDto;
 import com.jeka8833.tntclientendpoints.services.restapi.models.TNTClientUser;
@@ -104,11 +105,11 @@ public class SeasonalAccessoriesManager {
 
     @Locked
     private void updateScheduled(SeasonalAccessoryDto @NotNull [] seasonalList) {
-        Iterator<ScheduledFuture<?>> scheduledFutures = planedSchedules.iterator();
-        while (scheduledFutures.hasNext()) {
-            scheduledFutures.next().cancel(true);
-            scheduledFutures.remove();
+        for (ScheduledFuture<?> scheduledFuture : planedSchedules) {
+            scheduledFuture.cancel(true);
         }
+
+        planedSchedules.clear();
 
         ZonedDateTime startTime = ZonedDateTime.now().minusMinutes(5);  // Add 5 Minutes before remove accessories
 
@@ -116,6 +117,9 @@ public class SeasonalAccessoriesManager {
             long until = startTime.until(seasonal.end(), ChronoUnit.NANOS);
 
             if (until > 0) {
+                log.info("Seasonal accessory {} reset at: {} minutes",
+                        seasonal.accessories(), TimeUnit.NANOSECONDS.toMinutes(until));
+
                 ScheduledFuture<?> schedule = scheduledExecutorService.schedule(
                         this::removeAllSeasonalAccessories, until, TimeUnit.NANOSECONDS);
 
@@ -139,6 +143,8 @@ public class SeasonalAccessoriesManager {
     }
 
     public void removeAllSeasonalAccessories() {
+        Set<String> seasonalAccessories = getActiveSeasonalAccessory();
+
         Collection<ChangeFileTask> tasks = getNeedToDeletePlayers().stream()
                 .map(playerUUID -> {
                     Path configPath = gitService.getGitFolder().resolve("player/config/" + playerUUID + ".json");
@@ -146,9 +152,22 @@ public class SeasonalAccessoriesManager {
                     return new ChangeFileTask(configPath, () -> {
                         GitPlayerConfigDto playerGitConfig = playerConfigService.readOrDefault(configPath);
 
-                        playerGitConfig.setAccessories(new HashMap<>());
+                        boolean needUpdate = false;
+                        Map<String, AccessoryParameterDto> allowed = new HashMap<>();
+                        for (Map.Entry<String, AccessoryParameterDto> accesoryEntry :
+                                playerGitConfig.getAccessories().entrySet()) {
+                            if (seasonalAccessories.contains(accesoryEntry.getKey())) {
+                                allowed.put(accesoryEntry.getKey(), accesoryEntry.getValue());
+                            } else {
+                                needUpdate = true;
+                            }
+                        }
 
-                        playerConfigService.write(configPath, playerGitConfig);
+                        if (needUpdate) {
+                            playerGitConfig.setAccessories(allowed);
+
+                            playerConfigService.write(configPath, playerGitConfig);
+                        }
                     });
                 })
                 .toList();

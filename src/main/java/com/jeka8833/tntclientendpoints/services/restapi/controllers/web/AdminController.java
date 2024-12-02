@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class AdminController {
-
     private final AccessoriesManager accessoriesManager;
     private final SeasonalAccessoriesManager seasonalAccessoriesManager;
 

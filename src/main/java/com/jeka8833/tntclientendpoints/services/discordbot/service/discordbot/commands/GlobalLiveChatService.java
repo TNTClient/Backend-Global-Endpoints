@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
@@ -64,17 +65,28 @@ public class GlobalLiveChatService {
             long chatID = connectedChatModel.getChatID();
 
             try {
-                PrivateChannel channel = jda.getPrivateChannelById(chatID);
+                MessageChannel channel = jda.getChannelById(MessageChannel.class, chatID);
                 if (channel == null) {
                     connectedChatRepository.deleteById(chatID);
 
-                    log.warn("Delete global chat for: {}", chatID);
+                    log.warn("Delete live chat for {} from database", chatID);
                     continue;
                 }
 
-                channel.sendMessageEmbeds(message).queue();
+                channel.sendMessageEmbeds(message).queue(_ -> {
+                }, fail -> {
+                    log.warn("Failed to send message to {}", chatID, fail);
+
+                    if (fail instanceof ErrorResponseException e) {
+                        if (e.getErrorCode() == 50007) {     // Bot blocked by user
+                            connectedChatRepository.deleteById(chatID);
+
+                            log.warn("Delete live chat for {} from database", chatID);
+                        }
+                    }
+                });
             } catch (Exception e) {
-                log.warn("Failed to send global message to: {}", chatID, e);
+                log.warn("Failed to send message to: {}", chatID, e);
             }
         }
     }

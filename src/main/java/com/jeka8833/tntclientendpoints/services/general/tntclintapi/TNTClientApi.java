@@ -13,10 +13,10 @@ import com.jeka8833.toprotocol.core.register.PacketRegistryBuilder;
 import com.jeka8833.toprotocol.core.serializer.ArrayInputSerializer;
 import com.jeka8833.toprotocol.core.serializer.ArrayOutputSerializer;
 import com.jeka8833.toprotocol.core.serializer.PacketInputSerializer;
+import lombok.Locked;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okio.ByteString;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,10 +26,9 @@ import java.util.UUID;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
+@Slf4j
 public class TNTClientApi {
     private static final int MAX_PACKET_SIZE = 2 * 1024;
-
-    private static final Logger LOGGER = LogManager.getLogger(TNTClientApi.class);
 
     private static final ClientPacketRegistry<Byte, PacketBase, PacketBase> PACKET_REGISTRY =
             new PacketRegistryBuilder<Byte, PacketBase, PacketBase>()
@@ -41,9 +40,8 @@ public class TNTClientApi {
                         build.clientbound(ClientboundWebToken.class, ClientboundWebToken::new);
                         build.serverbound(ServerboundWebToken.class, ServerboundWebToken::new);
                     })
-                    .register((byte) 254, build -> {
-                        build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new);
-                    })
+                    .register((byte) 254, build ->
+                            build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new))
                     .register((byte) 255, build -> {
                         build.clientbound(ClientboundAuth.class, ClientboundAuth::new);
                         build.serverbound(ServerboundAuth.class, ServerboundAuth::new);
@@ -91,7 +89,7 @@ public class TNTClientApi {
 
             PacketBase packet = PACKET_REGISTRY.createPacket(packetId, serializer);
             if (packet == null) {
-                LOGGER.warn("Unknown packet id: {}", packetId & 0xFF);
+                log.warn("Unknown packet id: {}", packetId & 0xFF);
                 return;
             }
 
@@ -109,7 +107,7 @@ public class TNTClientApi {
 
             if (state != State.CLOSED) state = State.RECONNECTING;
 
-            LOGGER.error("Exception in WebSocket", t);
+            log.error("Exception in WebSocket", t);
 
             doReconnect();
         }
@@ -120,7 +118,7 @@ public class TNTClientApi {
 
             if (state != State.CLOSED) state = State.RECONNECTING;
 
-            LOGGER.info("Server close WebSocket with code {}: {}", code, reason);
+            log.info("Server close WebSocket with code {}: {}", code, reason);
 
             doReconnect();
         }
@@ -135,23 +133,25 @@ public class TNTClientApi {
         this.reconnectDelayNanos = reconnectDelayNanos;
         this.executorService = executorService;
 
-        registerListener(ClientboundAuth.class, packet -> {
+        registerListener(ClientboundAuth.class, _ -> {
             if (authorisingFuture != null) authorisingFuture.cancel(true);
 
             if (state != State.CLOSED) state = State.CONNECTED;
 
-            LOGGER.info("TNTClient API Connected!");
+            log.info("TNTClient API Connected!");
         });
     }
 
-    public synchronized void connect() {
+    @Locked
+    public void connect() {
         if (state != State.CLOSED) return;
 
         state = State.CONNECTING;
         doReconnect();
     }
 
-    public synchronized void disconnect() {
+    @Locked
+    public void disconnect() {
         if (authorisingFuture != null) {
             authorisingFuture.cancel(true);
 
@@ -176,7 +176,7 @@ public class TNTClientApi {
     public <T extends PacketBase> void registerListener(@NotNull Class<T> packetClass,
                                                         @NotNull Consumer<T> listener) {
         Collection<Consumer<PacketBase>> list =
-                listenersMap.computeIfAbsent(packetClass, packet -> new CopyOnWriteArrayList<>());
+                listenersMap.computeIfAbsent(packetClass, _ -> new CopyOnWriteArrayList<>());
 
         //noinspection unchecked
         list.add((Consumer<PacketBase>) listener);
@@ -216,8 +216,9 @@ public class TNTClientApi {
         return false;
     }
 
-    private synchronized void doReconnect() {
-        LOGGER.info("TNTClient API Reconnecting... Status: {}", state);
+    @Locked
+    private void doReconnect() {
+        log.info("TNTClient API Reconnecting... Status: {}", state);
 
         if (state == State.RECONNECTING || state == State.AUTHORISING || state == State.CONNECTING) {
             if (reconnectingFuture != null) reconnectingFuture.cancel(true);
@@ -232,7 +233,7 @@ public class TNTClientApi {
             reconnectingFuture = executorService.schedule(() -> {
                 lastConnectTime = System.nanoTime();
 
-                LOGGER.info("TNTClient API Connecting...");
+                log.info("TNTClient API Connecting...");
 
                 webSocket = client.newWebSocket(request, webSocketListener);
             }, reconnectDelayNanos - (System.nanoTime() - lastConnectTime), TimeUnit.NANOSECONDS);

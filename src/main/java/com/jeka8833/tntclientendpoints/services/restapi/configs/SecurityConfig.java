@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers("/api/v1/player/profile/cape").hasAuthority("CAPE")
                         .requestMatchers("/api/v1/player/profile/tab").hasAuthority("HEART")
+                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
@@ -64,9 +65,10 @@ public class SecurityConfig {
                         .rememberMeParameter("remember")
                         .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(7)))
                 .httpBasic(httpSecurityHttpBasicConfigurer ->
-                        httpSecurityHttpBasicConfigurer.authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(
-                                        HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase())))
+                        httpSecurityHttpBasicConfigurer.authenticationEntryPoint(
+                                (_, response, _) ->
+                                        response.sendError(HttpStatus.UNAUTHORIZED.value(),
+                                                HttpStatus.UNAUTHORIZED.getReasonPhrase())))
                 .build();
     }
 }
