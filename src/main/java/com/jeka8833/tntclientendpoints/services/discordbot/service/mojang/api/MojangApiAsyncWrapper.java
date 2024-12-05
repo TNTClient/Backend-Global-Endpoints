@@ -13,12 +13,12 @@ import java.util.concurrent.CompletableFuture;
 class MojangApiAsyncWrapper {
     private final MojangApiRequester apiRequester;
 
-    @Async("virtual")
+    @Async("virtual-executor")
     CompletableFuture<MojangProfile> getProfileAsync(String playerName) {
         return CompletableFuture.completedFuture(apiRequester.getProfile(playerName));
     }
 
-    @Async("virtual")
+    @Async("virtual-executor")
     CompletableFuture<MojangProfile> getProfileAsync(UUID playerUUID) {
         return CompletableFuture.completedFuture(apiRequester.getProfile(playerUUID));
     }

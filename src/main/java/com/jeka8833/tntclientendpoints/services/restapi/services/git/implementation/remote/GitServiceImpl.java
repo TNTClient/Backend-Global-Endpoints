@@ -6,10 +6,12 @@ import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
@@ -32,15 +35,18 @@ public class GitServiceImpl implements GitService {
     private final BlockingQueue<ChangeFileTask> tasks = new LinkedBlockingQueue<>();
 
     private final Path gitFolder;
+    private final AsyncTaskExecutor executor;
     private final String repositoryUrl;
     private final GitBackupService gitBackupService;
 
     private Git git;
 
     public GitServiceImpl(@Value("${tntclient.git.folder}") Path gitFolder,
+                          @Qualifier("virtual-executor") AsyncTaskExecutor executor,
                           @Value("${tntclient.git.url}") String repositoryUrl,
                           GitBackupService gitBackupService) throws GitAPIException {
         this.gitFolder = gitFolder;
+        this.executor = executor;
         this.repositoryUrl = repositoryUrl;
         this.gitBackupService = gitBackupService;
 
@@ -59,7 +65,7 @@ public class GitServiceImpl implements GitService {
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-        Thread.startVirtualThread(() -> {
+        executor.execute(() -> {
             while (!Thread.interrupted()) {
                 Collection<String> filesChangedNames = new ArrayList<>();
 

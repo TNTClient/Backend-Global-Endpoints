@@ -9,13 +9,13 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 public class TntClientApiConfig {
 
     @Bean
-    public TNTClientApi tntClientAPI(OkHttpClient okHttpClient,
+    public TNTClientApi tntClientAPI(OkHttpClient okHttpClient, ScheduledExecutorService scheduledExecutorService,
                                      @Value("${tntclient.api.url:wss://tnthypixel.jeka8833.pp.ua}") String requestUrl,
                                      @Value("${tntclient.api.user}") UUID user,
                                      @Value("${tntclient.api.password}") UUID password,
@@ -26,7 +26,7 @@ public class TntClientApiConfig {
                 user,
                 password,
                 reconnectDelay.toNanos(),
-                Executors.newSingleThreadScheduledExecutor()
+                scheduledExecutorService
         );
     }
 }
