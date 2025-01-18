@@ -1,7 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.TNTClientApi;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.TNTClientApi;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundWebToken;
 import com.jeka8833.tntclientendpoints.services.restapi.models.SecurityUser;
 import com.jeka8833.tntclientendpoints.services.restapi.services.web.security.TempSecurityTokenService;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,5 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.discordbot.listeners;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.jeka8833.tntclientendpoints.services.discordbot.exceptions.SendErrorMessageDiscord;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.ReplyWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +11,6 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction;
-import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +24,7 @@ public class SelectMenuManager extends ListenerAdapter {
     private final String prefix = String.valueOf(System.currentTimeMillis());
     private final AtomicInteger counter = new AtomicInteger();
 
-    private final Cache<String, SelectMenuEvent> cache = new Cache2kBuilder<String, SelectMenuEvent>() {
-    }
+    private final Cache<String, SelectMenuEvent> cache = Caffeine.newBuilder()
             .expireAfterWrite(15, TimeUnit.MINUTES)
             .build();
 
@@ -33,7 +32,7 @@ public class SelectMenuManager extends ListenerAdapter {
     public void onStringSelectInteraction(@NotNull StringSelectInteractionEvent event) {
         event.deferEdit().queue(hook -> hook.deleteOriginal().queue());
 
-        SelectMenuEvent consumer = cache.peekAndRemove(event.getComponentId());
+        SelectMenuEvent consumer = cache.asMap().remove(event.getComponentId());
         if (consumer == null) return;
 
         try (var deferReply = new ReplyWrapper(event)) {

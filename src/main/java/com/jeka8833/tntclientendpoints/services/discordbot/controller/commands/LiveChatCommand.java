@@ -13,9 +13,9 @@ import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.co
 import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.PlayerRequesterService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.MinecraftServer;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.TNTClientApi;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.MinecraftServer;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.TNTClientApi;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundChat;
 import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

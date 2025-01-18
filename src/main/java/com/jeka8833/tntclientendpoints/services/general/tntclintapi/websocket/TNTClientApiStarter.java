@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi;
+package com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

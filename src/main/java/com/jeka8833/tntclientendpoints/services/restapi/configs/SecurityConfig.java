@@ -1,5 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.configs;
 
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
 import com.jeka8833.tntclientendpoints.services.restapi.controllers.web.LogoutController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,9 +50,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/api/v1/player/profile/cape").hasAuthority("CAPE")
-                        .requestMatchers("/api/v1/player/profile/tab").hasAuthority("HEART")
-                        .requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/player/profile/cape").hasAuthority(UserRole.HAS_CAPE.getAuthority())
+                        .requestMatchers("/api/v1/player/profile/tab").hasAuthority(UserRole.HAS_TAB.getAuthority())
+                        .requestMatchers("/api/v1/admin/**").hasAuthority(UserRole.ADMIN.getAuthority())
                         .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")

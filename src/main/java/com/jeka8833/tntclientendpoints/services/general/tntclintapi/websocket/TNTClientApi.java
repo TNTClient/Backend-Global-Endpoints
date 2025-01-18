@@ -1,18 +1,18 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi;
+package com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundAuth;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundDiscordToken;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.clientbound.ClientboundWebToken;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundAuth;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.packet.serverbound.ServerboundWebToken;
-import com.jeka8833.toprotocol.core.packet.PacketBase;
-import com.jeka8833.toprotocol.core.register.ClientPacketRegistry;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.ClientBoundPacket;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.ServerBoundPacket;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundDiscordToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundWebToken;
+import com.jeka8833.toprotocol.core.register.ClientBoundRegistry;
 import com.jeka8833.toprotocol.core.register.PacketRegistryBuilder;
-import com.jeka8833.toprotocol.core.serializer.ArrayInputSerializer;
-import com.jeka8833.toprotocol.core.serializer.ArrayOutputSerializer;
-import com.jeka8833.toprotocol.core.serializer.PacketInputSerializer;
+import com.jeka8833.toprotocol.core.serializer.InputByteArray;
+import com.jeka8833.toprotocol.core.serializer.OutputByteArray;
 import lombok.Locked;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -30,25 +30,29 @@ import java.util.function.Consumer;
 public class TNTClientApi {
     private static final int MAX_PACKET_SIZE = 2 * 1024;
 
-    private static final ClientPacketRegistry<Byte, PacketBase, PacketBase> PACKET_REGISTRY =
-            new PacketRegistryBuilder<Byte, PacketBase, PacketBase>()
-                    .register((byte) 248, build -> {
-                        build.clientbound(ClientboundChat.class, ClientboundChat::new);
-                        build.serverbound(ServerboundChat.class, ServerboundChat::new);
-                    })
-                    .register((byte) 253, build -> {
-                        build.clientbound(ClientboundWebToken.class, ClientboundWebToken::new);
-                        build.serverbound(ServerboundWebToken.class, ServerboundWebToken::new);
-                    })
-                    .register((byte) 254, build ->
-                            build.clientbound(ClientboundDiscordToken.class, ClientboundDiscordToken::new))
-                    .register((byte) 255, build -> {
-                        build.clientbound(ClientboundAuth.class, ClientboundAuth::new);
-                        build.serverbound(ServerboundAuth.class, ServerboundAuth::new);
-                    })
+    private static final ClientBoundRegistry<Byte, ClientBoundPacket, ServerBoundPacket, Integer> PACKET_REGISTRY =
+            new PacketRegistryBuilder<Byte, ClientBoundPacket, ServerBoundPacket, Integer>()
+                    .register((byte) 248, build -> build
+                            .clientbound(ClientboundChat.class, ClientboundChat::new)
+                            .serverbound(ServerboundChat.class, ServerboundChat::new)
+                    )
+                    .register((byte) 253, build -> build
+                            .clientbound(ClientboundWebToken.class, (input, _) ->
+                                    new ClientboundWebToken(input))
+                            .serverbound(ServerboundWebToken.class, (input, protocolVersion) ->
+                                    new ServerboundWebToken(input, protocolVersion))
+                    )
+                    .register((byte) 254, build -> build
+                            .clientbound(ClientboundDiscordToken.class, (inputByteArray, _) ->
+                                    new ClientboundDiscordToken(inputByteArray))
+                    )
+                    .register((byte) 255, build -> build
+                            .clientbound(ClientboundAuth.class, ClientboundAuth::new)
+                            .serverbound(ServerboundAuth.class, ServerboundAuth::new)
+                    )
                     .buildForClient();
 
-    private final Map<Class<? extends PacketBase>, Collection<Consumer<PacketBase>>> listenersMap =
+    private final Map<Class<? extends ClientBoundPacket>, Collection<Consumer<ClientBoundPacket>>> listenersMap =
             new ConcurrentHashMap<>();
 
     private final Request request;
@@ -84,20 +88,28 @@ public class TNTClientApi {
         public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
             super.onMessage(webSocket, bytes);
 
-            PacketInputSerializer serializer = new ArrayInputSerializer(bytes.toByteArray());
-            byte packetId = serializer.readByte();
+            InputByteArray serializer = new InputByteArray(bytes.toByteArray());
+            try {
+                byte packetId = serializer.readByte();
 
-            PacketBase packet = PACKET_REGISTRY.createPacket(packetId, serializer);
-            if (packet == null) {
-                log.warn("Unknown packet id: {}", packetId & 0xFF);
-                return;
-            }
-
-            Collection<Consumer<PacketBase>> listeners = listenersMap.get(packet.getClass());
-            if (listeners != null) {
-                for (Consumer<PacketBase> listener : listeners) {
-                    listener.accept(packet);
+                ClientBoundPacket packet = PACKET_REGISTRY.createClientBoundPacket(packetId, serializer);
+                if (packet == null) {
+                    log.warn("Unknown packet id: {}", packetId & 0xFF);
+                    return;
                 }
+
+                Collection<Consumer<ClientBoundPacket>> listeners = listenersMap.get(packet.getClass());
+                if (listeners != null) {
+                    for (Consumer<ClientBoundPacket> listener : listeners) {
+                        try {
+                            listener.accept(packet);
+                        } catch (Exception e) {
+                            log.warn("Exception in listener", e);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Fail to parse packet", e);
             }
         }
 
@@ -173,16 +185,16 @@ public class TNTClientApi {
         state = State.CLOSED;
     }
 
-    public <T extends PacketBase> void registerListener(@NotNull Class<T> packetClass,
-                                                        @NotNull Consumer<T> listener) {
-        Collection<Consumer<PacketBase>> list =
-                listenersMap.computeIfAbsent(packetClass, _ -> new CopyOnWriteArrayList<>());
+    public <T extends ClientBoundPacket> void registerListener(@NotNull Class<T> packetClass,
+                                                               @NotNull Consumer<T> listener) {
+        Collection<Consumer<ClientBoundPacket>> list = listenersMap.computeIfAbsent(packetClass,
+                _ -> new CopyOnWriteArrayList<>());
 
         //noinspection unchecked
-        list.add((Consumer<PacketBase>) listener);
+        list.add((Consumer<ClientBoundPacket>) listener);
     }
 
-    public void send(@NotNull PacketBase packet, long maxTimeSend, TimeUnit unit) {
+    public void send(@NotNull ServerBoundPacket packet, long maxTimeSend, TimeUnit unit) {
         if (!send(packet)) {
             long endTime = System.nanoTime() + unit.toNanos(maxTimeSend);
 
@@ -198,20 +210,20 @@ public class TNTClientApi {
         }
     }
 
-    public boolean send(@NotNull PacketBase packet) throws RuntimeException {
-        Byte identifier = PACKET_REGISTRY.getIdentifiersMap().get(packet.getClass());
+    public boolean send(@NotNull ServerBoundPacket packet) throws RuntimeException {
+        Byte identifier = PACKET_REGISTRY.getServerBoundPacketKey(packet.getClass());
         if (identifier == null) {
             throw new UnsupportedOperationException("Packet not registered: " + packet.getClass().getName());
         }
 
-        ArrayOutputSerializer stream = new ArrayOutputSerializer(MAX_PACKET_SIZE);
+        OutputByteArray stream = new OutputByteArray(MAX_PACKET_SIZE);
         stream.writeByte(identifier);
         packet.write(stream);
 
         WebSocket webSocket = this.webSocket;
         if (webSocket != null &&
                 (state == State.CONNECTED || state == State.AUTHORISING && packet instanceof ServerboundAuth)) {
-            return webSocket.send(ByteString.of(stream.array()));
+            return webSocket.send(ByteString.of(stream.toByteArray()));
         }
         return false;
     }

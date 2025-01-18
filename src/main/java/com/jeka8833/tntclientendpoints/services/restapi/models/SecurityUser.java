@@ -1,11 +1,11 @@
 package com.jeka8833.tntclientendpoints.services.restapi.models;
 
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class SecurityUser implements UserDetails {
-    private static final SimpleGrantedAuthority AUTH_BLOCKED = new SimpleGrantedAuthority("AUTH_BLOCKED");
-
     private final UUID username;
 
     private Collection<GrantedAuthority> authorities = new ArrayList<>();
@@ -53,7 +51,7 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !authorities.contains(AUTH_BLOCKED);
+        return !authorities.contains(UserRole.AUTH_BLOCKED);
     }
 
     @Override

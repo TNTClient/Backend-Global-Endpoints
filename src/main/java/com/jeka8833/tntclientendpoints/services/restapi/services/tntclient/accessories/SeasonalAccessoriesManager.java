@@ -1,6 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
 import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.AccessoryParameterDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.SeasonalAccessoryDto;
@@ -20,7 +21,6 @@ import org.hibernate.annotations.Immutable;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -40,8 +40,6 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class SeasonalAccessoriesManager {
-    private static final SimpleGrantedAuthority ACCESSORY_AUTHORITY = new SimpleGrantedAuthority("ACCESSORIES");
-
     private final Request httpRequest;
     private final OkHttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -66,8 +64,8 @@ public class SeasonalAccessoriesManager {
         this.gitService = gitService;
 
         this.httpRequest = new Request.Builder().url(accessoriesListUrl).build();
-        this.seasonalList = forceReadSeasonalList();
-        updateScheduled(seasonalList);
+
+        if (!tryReloadSeasonalList()) throw new RuntimeException("Can't reload seasonal accessories");
     }
 
     @NotNull
@@ -182,8 +180,8 @@ public class SeasonalAccessoriesManager {
 
         Collection<UUID> needToDelete = new HashSet<>(allUsers);
         for (TNTClientUser user : tntClientUsers) {
-            if (user.getRoles() != null &&
-                    AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRoles()).contains(ACCESSORY_AUTHORITY)) {
+            if (user.getRoles() != null && AuthorityUtils.commaSeparatedStringToAuthorityList(
+                    user.getRoles()).contains(UserRole.HAS_ACCESSORIES)) {
                 needToDelete.remove(user.getUser());
             }
         }
