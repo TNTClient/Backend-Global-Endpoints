@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet;
+package com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet;
 
 import com.jeka8833.toprotocol.core.packet.PacketBase;
 import com.jeka8833.toprotocol.core.serializer.OutputByteArray;

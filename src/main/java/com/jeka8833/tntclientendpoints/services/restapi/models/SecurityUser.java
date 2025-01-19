@@ -1,6 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.models;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.database.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;

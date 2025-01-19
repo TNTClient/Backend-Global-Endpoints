@@ -4,7 +4,7 @@ import com.jeka8833.tntclientendpoints.services.discordbot.models.ConnectedChatM
 import com.jeka8833.tntclientendpoints.services.discordbot.repositories.ConnectedChatRepository;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.MojangProfile;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.mojang.api.MojangApi;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.MinecraftServer;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.MinecraftServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;

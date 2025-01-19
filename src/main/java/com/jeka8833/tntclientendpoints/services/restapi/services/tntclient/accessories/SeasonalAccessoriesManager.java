@@ -1,7 +1,7 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.database.UserRole;
 import com.jeka8833.tntclientendpoints.services.general.util.UuidUtil;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.AccessoryParameterDto;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.SeasonalAccessoryDto;

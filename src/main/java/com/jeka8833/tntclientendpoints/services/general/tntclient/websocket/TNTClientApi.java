@@ -1,14 +1,14 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket;
+package com.jeka8833.tntclientendpoints.services.general.tntclient.websocket;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.ClientBoundPacket;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.ServerBoundPacket;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundAuth;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundDiscordToken;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundWebToken;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundAuth;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.ClientBoundPacket;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.ServerBoundPacket;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundDiscordToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundWebToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.serverbound.ServerboundAuth;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.serverbound.ServerboundWebToken;
 import com.jeka8833.toprotocol.core.register.ClientBoundRegistry;
 import com.jeka8833.toprotocol.core.register.PacketRegistryBuilder;
 import com.jeka8833.toprotocol.core.serializer.InputByteArray;

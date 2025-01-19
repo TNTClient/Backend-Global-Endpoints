@@ -2,11 +2,11 @@ package com.jeka8833.tntclientendpoints.services.discordbot.controller;
 
 import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.DiscordTokenManagerService;
 import com.jeka8833.tntclientendpoints.services.discordbot.service.discordbot.commands.GlobalLiveChatService;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.MinecraftServer;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.TNTClientApi;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundChat;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.clientbound.ClientboundDiscordToken;
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound.ServerboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.MinecraftServer;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.TNTClientApi;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundChat;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.clientbound.ClientboundDiscordToken;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.serverbound.ServerboundChat;
 import com.jeka8833.tntclientendpoints.services.general.util.ChatColor;
 import org.springframework.stereotype.Component;
 

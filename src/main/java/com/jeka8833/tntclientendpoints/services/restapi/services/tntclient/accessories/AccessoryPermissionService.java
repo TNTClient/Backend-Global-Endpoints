@@ -1,6 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.services.tntclient.accessories;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.database.UserRole;
 import com.jeka8833.tntclientendpoints.services.restapi.dtos.web.PostAccessoriesDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

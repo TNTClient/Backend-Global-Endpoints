@@ -1,6 +1,6 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.serverbound;
+package com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.serverbound;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.websocket.packet.ServerBoundPacket;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.websocket.packet.ServerBoundPacket;
 import com.jeka8833.toprotocol.core.serializer.InputByteArray;
 import com.jeka8833.toprotocol.core.serializer.OutputByteArray;
 import com.jeka8833.toprotocol.extension.serializer.SerializeUUID;

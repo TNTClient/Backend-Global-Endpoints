@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.general.tntclintapi.database;
+package com.jeka8833.tntclientendpoints.services.general.tntclient.database;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

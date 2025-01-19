@@ -1,6 +1,6 @@
 package com.jeka8833.tntclientendpoints.services.restapi.configs;
 
-import com.jeka8833.tntclientendpoints.services.general.tntclintapi.database.UserRole;
+import com.jeka8833.tntclientendpoints.services.general.tntclient.database.UserRole;
 import com.jeka8833.tntclientendpoints.services.restapi.controllers.web.LogoutController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
