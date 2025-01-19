@@ -167,6 +167,8 @@ public class GitServiceImpl implements GitService {
                 .setName("latest_branch").setOrphan(true).setForced(true).call();
         git.add()
                 .addFilepattern(".").call();
+        git.add()
+                .setUpdate(true).addFilepattern(".").call();
         git.commit()
                 .setMessage(message).call();
         git.branchDelete()
@@ -185,7 +187,7 @@ public class GitServiceImpl implements GitService {
                         Files.delete(file);
                     } catch (Exception e) {
                         try {
-                            Files.setAttribute(file, "dos:readonly", false);
+                            Files.setAttribute(file, "dos:readonly", false);    // Windows
 
                             Files.delete(file);
                         } catch (Exception e1) {

@@ -18,8 +18,7 @@
                     <level>${CONSOLE_LOG_THRESHOLD}</level>
                 </filter>
                 <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-                    <evaluator>
-                        <expression>return message.equals("analytics");</expression>
+                    <evaluator class="com.jeka8833.tntclientendpoints.services.general.analytic.AnalyticFilter">
                     </evaluator>
                     <OnMismatch>NEUTRAL</OnMismatch>
                     <OnMatch>DENY</OnMatch>
@@ -35,8 +34,7 @@
                     <level>${FILE_LOG_THRESHOLD}</level>
                 </filter>
                 <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-                    <evaluator>
-                        <expression>return message.equals("analytics");</expression>
+                    <evaluator class="com.jeka8833.tntclientendpoints.services.general.analytic.AnalyticFilter">
                     </evaluator>
                     <OnMismatch>NEUTRAL</OnMismatch>
                     <OnMatch>DENY</OnMatch>

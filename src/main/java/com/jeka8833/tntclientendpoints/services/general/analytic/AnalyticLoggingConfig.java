@@ -1,4 +1,4 @@
-package com.jeka8833.tntclientendpoints.services.general.configs;
+package com.jeka8833.tntclientendpoints.services.general.analytic;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 public class AnalyticLoggingConfig {
+
+    public static final String MESSAGE_TEXT = "analytics";
 
     private final DecimalFormat cpuUsageFormatter =
             new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US));
@@ -39,7 +41,7 @@ public class AnalyticLoggingConfig {
                         castToString(meterRegistry.get("process.cpu.usage").gauge().value(), cpuUsageFormatter));
                 MDC.put("threads", castToLongString(meterRegistry.get("jvm.threads.live").gauge().value()));
 
-                log.info("analytics");
+                log.info(MESSAGE_TEXT);
 
                 MDC.clear();
             } catch (Throwable e) {
